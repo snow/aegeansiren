@@ -76,6 +76,6 @@ class AgsController extends CController
 		{
 			$title .= ' - ';
 		}
-		$this->pageTitle = $title.Y::t('ags','sitename');
+		$this->pageTitle = $title.Y::a()->name;
 	}
 }

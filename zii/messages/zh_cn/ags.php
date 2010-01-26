@@ -3,7 +3,6 @@ return array(
 	/**
 	 * misc
 	 */
-	'sitename'=>'SITENAME',
 	'notification'=>'通知',
     'newFeature'=>'号外',
 	'dismiss'=>'知道了',
