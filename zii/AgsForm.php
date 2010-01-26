@@ -32,11 +32,11 @@ class AgsForm extends CFormModel
 
 	public function getAttributeDefault($attribute)
 	{
-		$value = Y::t(get_class($this).':'.$attribute.':default');
+		$value = Y::t('ags',get_class($this).':'.$attribute.':default');
 
 		if (get_class($this).':'.$attribute.':default' == $value)
 		{
-			$value = Y::t(get_class($this).':'.$attribute);
+			$value = Y::t('ags',get_class($this).':'.$attribute);
 		}
 
 		if ('none' === $value)
@@ -48,11 +48,11 @@ class AgsForm extends CFormModel
 
 	public function getAttributeLabel($attribute)
 	{
-		$value = Y::t(get_class($this).':'.$attribute.':label');
+		$value = Y::t('ags',get_class($this).':'.$attribute.':label');
 
 		if (get_class($this).':'.$attribute.':label' == $value)
 		{
-			$value = Y::t(get_class($this).':'.$attribute);
+			$value = Y::t('ags',get_class($this).':'.$attribute);
 		}
 
 		if ('none' === $value)

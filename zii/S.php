@@ -1,6 +1,16 @@
 <?php
-class AgsSeraph
+/**
+ * alias of AegeanSiren
+ */
+class S
 {
+	public static function d($var)
+	{
+		echo '<pre>';
+		var_dump($var);
+		echo '</pre>';exit;
+	}
+	
 	public static function getMultiform($word)
 	{
 		if (preg_match('/[^aeiou]y$/',$word))

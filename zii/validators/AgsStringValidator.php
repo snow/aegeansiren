@@ -60,17 +60,17 @@ class AgsStringValidator extends CValidator
 		$length=mb_strlen($value,'utf8');
 		if($this->min!==null && $length<$this->min)
 		{
-			$message=$this->tooShort!==null?$this->tooShort:Y::t('error:tooShort');
+			$message=$this->tooShort!==null?$this->tooShort:Y::t('ags','error:tooShort');
 			$this->addError($object,$attribute,$message,array('{min}'=>$this->min));
 		}
 		if($this->max!==null && $length>$this->max)
 		{
-			$message=$this->tooLong!==null?$this->tooLong:Y::t('error:tooLong');
+			$message=$this->tooLong!==null?$this->tooLong:Y::t('ags','error:tooLong');
 			$this->addError($object,$attribute,$message,array('{max}'=>$this->max));
 		}
 		if($this->is!==null && $length!==$this->is)
 		{
-			$message=$this->message!==null?$this->message:Y::t('error:notMatchFixedLength');
+			$message=$this->message!==null?$this->message:Y::t('ags','error:notMatchFixedLength');
 			$this->addError($object,$attribute,$message,array('{length}'=>$this->is));
 		}
 	}

@@ -35,7 +35,7 @@ class AgsNameToIdValidator extends CValidator
 				}
 				else
 				{
-					$object->addError($attrName,Y::t('error:notFound',array('{entity}'=>$object->$attrName)));
+					$object->addError($attrName,Y::t('ags','error:notFound',array('{entity}'=>$object->$attrName)));
 					if (is_array($result) && sizeof($result))
 					{
 						$suggestions = array();
@@ -43,7 +43,7 @@ class AgsNameToIdValidator extends CValidator
 						{
 							$suggestions[] = $r;
 						}
-						$object->addError($attrName,Y::t('searchSuggestion').implode(',',$suggestions));
+						$object->addError($attrName,Y::t('ags','searchSuggestion').implode(',',$suggestions));
 					}
 				}
 			}
@@ -76,7 +76,7 @@ class AgsNameToIdValidator extends CValidator
 				}
 				else
 				{
-					$object->addError($attrName,Y::t('error:notFound',array('{entity}'=>$object->$attrName)));
+					$object->addError($attrName,Y::t('ags','error:notFound',array('{entity}'=>$object->$attrName)));
 					if (is_array($result) && sizeof($result))
 					{
 						$suggestions = array();
@@ -84,7 +84,7 @@ class AgsNameToIdValidator extends CValidator
 						{
 							$suggestions[] = $r;
 						}
-						$object->addError($attrName,Y::t('searchSuggestion').implode(',',$suggestions));
+						$object->addError($attrName,Y::t('ags','searchSuggestion').implode(',',$suggestions));
 					}
 				}
 			}

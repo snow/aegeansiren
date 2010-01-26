@@ -82,7 +82,7 @@ class AgsHtml extends CHtml
 						unset($_labelOpt['label']);
 					}
 					else
-						$_labelText=Y::t(('' === $_model)?$_attribute:$_model.':'.$_attribute);
+						$_labelText=Y::t('ags',('' === $_model)?$_attribute:$_model.':'.$_attribute);
 
 					$_item .= self::label($_labelText,$for,$_labelOpt);
 				}
@@ -220,10 +220,10 @@ class AgsHtml extends CHtml
 				{
 					$_tipKey = get_class($_model).':'.$_attribute;
 				}
-				$_tip = Y::t($_tipKey.':tip');
+				$_tip = Y::t('ags',$_tipKey.':tip');
 				if (empty($_tip))
 				{
-					$_tip = Y::t($_tipKey);
+					$_tip = Y::t('ags',$_tipKey);
 				}
 				$_input .= AgsHtml::tag('div',array('class'=>'tip'),$_tip);
 			}
@@ -262,7 +262,7 @@ class AgsHtml extends CHtml
 
 	public static function longDate($timestamp)
 	{
-		return Y::t('longDate',array(
+		return Y::t('ags','longDate',array(
 			'{year}'=>self::yearOfStamp($timestamp),
 			'{month}'=>self::monthOfStamp($timestamp),
 			'{day}'=>self::dayOfStamp($timestamp),
@@ -272,7 +272,7 @@ class AgsHtml extends CHtml
 	public static function shortDate($timestamp)
 	{
 		return (self::yearOfStamp($timestamp) == self::yearOfStamp(time()))?
-			Y::t('shortDate',array(
+			Y::t('ags','shortDate',array(
 				'{month}'=>self::monthOfStamp($timestamp),
 				'{day}'=>self::dayOfStamp($timestamp),
 			)):
@@ -286,14 +286,14 @@ class AgsHtml extends CHtml
 
 	public static function likeLink($class,$id)
 	{
-		return parent::link(Y::t($class.':like'),array($class.'/like','id'=>$id),
-			array('title'=>Y::t($class.':like'),'class'=>'like s-nti '.$class));
+		return parent::link(Y::t('ags',$class.':like'),array($class.'/like','id'=>$id),
+			array('title'=>Y::t('ags',$class.':like'),'class'=>'like s-nti '.$class));
 	}
 
 	public static function unlikeLink($class,$id,$params=array())
 	{
-		return parent::link(Y::t($class.':unlike'),array($class.'/unlike','id'=>$id),
-			array('title'=>Y::t($class.':unlike'),'class'=>'like ing s-nti '.$class.($params['rm']?' rm':'')));
+		return parent::link(Y::t('ags',$class.':unlike'),array($class.'/unlike','id'=>$id),
+			array('title'=>Y::t('ags',$class.':unlike'),'class'=>'like ing s-nti '.$class.($params['rm']?' rm':'')));
 	}
 
 	public static function errorSummary($model,$htmlOptions=array(),$header='',$footer='')
