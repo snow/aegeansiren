@@ -22,7 +22,7 @@ return array(
 	'uncategorized'=>'未分类',
 	'longDate'=>'{year}年{month}月{day}日',
 	'shortDate'=>'{month}月{day}日',
-	'done'=>'搞定了',
+	'done'=>'\(^__^)/ 搞定了',
 	'thx4feedback'=>'感谢您的反馈！',
 	'thx4feedback:more'=>'这些信息将会帮助我们把LOGOS做得更好',
 	'resentActivateMail'=>'包含激活链接的邮件已经发送到你邮箱。如果没有找到，不妨检查一下垃圾邮件。',
@@ -31,7 +31,7 @@ return array(
 	/**
 	 * error
 	 */
-	'error:notFound'=>'我不知道"{entity}" :(',
+	'error:notFound'=>'没找到"{entity}" :(',
 	'error:notNull'=>'{attribute}不能为空',
 	'error:tooShort'=>'{attribute}最短应为{min}个字符',
 	'error:tooLong'=>'{attribute}最短应为{max}个字符',
