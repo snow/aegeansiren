@@ -31,16 +31,15 @@ return array(
 	/**
 	 * error
 	 */
-	'error:notFound'=>':( Nirvana不知道"{entity}"',
+	'error:notFound'=>'我不知道"{entity}" :(',
 	'error:notNull'=>'{attribute}不能为空',
 	'error:tooShort'=>'{attribute}最短应为{min}个字符',
 	'error:tooLong'=>'{attribute}最短应为{max}个字符',
 	'error:notMatchFixedLength'=>'{attribute}应为{length}个字符',
-	'error:wrongLoginDomain:jobseeker'=>'您是在{school}注册的，<a href="{redirectUrl}">点此跳转到{school}的登录页面。</a>',
-	'error:wrongLoginDomain:employer'=>'您是在企业校园招聘注册的，<a href="{redirectUrl}">点此跳转到企业校园招聘的登录页面。</a>',
-	'error:uniqueConflic'=>'{value}已经注册了',
-	'error:schoolNotInNirvana'=>'抱歉，这所高校还未加入校园招聘计划',
-	'error:emailNotRegistered'=>'{email}并没有注册',
+	'error:uniqueConflic'=>'{value}已经被占用了',
+	'error:userNotFound'=>'{account}并没有注册',
+	'error:accountNotActivated'=>'帐号还未激活。',
+	'error:wrongPassword'=>'密码不正确',
 	/**
 	 * notification
 	 */

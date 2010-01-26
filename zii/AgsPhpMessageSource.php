@@ -21,6 +21,9 @@ class AgsPhpMessageSource extends CPhpMessageSource
 	{
 		if($language===null)
 			$language=Yii::app()->getLanguage();
+			
+		Y::d($language);
+			
 		return $this->translateMessage($category,$message,$language);
 	}
 }
