@@ -6,9 +6,24 @@ class AgsMTA extends CComponent
 
 	public function init() {}
 
-	public function send($to,$subject,$body,$from = '',$fromName = ''){
-
+	/**
+	 * @param $params associate array of params listed below
+	 * @param $to array of array('addr'=>'nobody@neverland.com','name'=>'Nobody')
+	 * @param $bcc array of array('addr'=>'nobody@neverland.com','name'=>'Nobody')
+	 * @param string $subject
+	 * @param string $body
+	 * @param $from array('addr'=>'nobody@neverland.com','name'=>'Nobody')
+	 */
+	public function send($params = array())
+	{
 		require_once 'class.phpmailer.php';
+
+		$params = array_merge(array(
+			'from'=>array(
+				'addr'=>Yii::app()->params['sysmailAddr'],
+				'name'=>Yii::app()->params['sysmailName'],
+			),
+		),$params);
 
 		$mailer = new PHPMailer;
 
@@ -18,21 +33,40 @@ class AgsMTA extends CComponent
 		$mailer->Username = $this->user;
 		$mailer->Password = $this->password;
 
-		$mailer->SetFrom($from?$from:Yii::app()->params['sysmailAddr'],
-			$fromName?$fromName:Yii::app()->params['sysmailName']);
+		$mailer->SetFrom($params['from']['addr'],$params['from']['name']);
 
-		if (!is_array($to))
+		foreach (array('to','bcc','cc') as $sendType)
 		{
-			$to = array($to);
+			if (isset($params[$sendType]['addr']))
+			{
+				$params[$sendType] = array($params[$sendType]);
+			}
+			foreach ($params[$sendType] as $addr)
+			{
+				if (filter_var($addr['addr'],FILTER_VALIDATE_EMAIL))
+				{
+					switch ($sendType)
+					{
+						default:
+							$mailer->AddAddress($addr['addr'],$addr['name']);
+						break;
+
+						case 'bcc':
+							$mailer->AddBCC($addr['addr'],$addr['name']);
+						break;
+
+						case 'cc':
+							$mailer->AddCC($addr['addr'],$addr['name']);
+						break;
+					}
+				}
+			}
 		}
-		foreach ($to as $e)
-		{
-			$mailer->AddAddress($e);
-		}
-		$mailer->Subject = $subject;
+
+		$mailer->Subject = $params['subject'];
 		$mailer->IsHTML(true);
 		$mailer->CharSet = 'utf-8';
-		$mailer->Body = $body;
+		$mailer->Body = $params['body'];
 
 		return $mailer->Send();
 	}

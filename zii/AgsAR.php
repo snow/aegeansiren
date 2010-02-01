@@ -99,22 +99,39 @@ abstract class AgsAR extends CActiveRecord
 		return $values;
 	}
 
-	public function searchWithPKQuery($query,$params)
+	public function searchWithPKQuery($query,$params,$or=false)
 	{
-		return $this->searchWithPKList(Yii::app()->db->createCommand($query)->queryColumn($params));
+		return $this->searchWithPKList(Yii::app()->db->createCommand($query)->queryColumn($params),$or);
 	}
 
-	public function searchWithPKList($pkList)
+	public function searchWithPKList($pkList,$or=false)
 	{
-		if (null === $this->_pkList)
+		if ($or)
 		{
-			$this->_pkList = array();
-		}
+			if (null === $this->_pkList)
+			{
+				$this->_pkList = array();
+			}
 
-		foreach ($pkList as $pk)
+			foreach ($pkList as $pk)
+			{
+				$pk = (int)$pk;
+				$this->_pkList[$pk] = $pk;
+			}
+		}
+		else
 		{
-			$pk = (int)$pk;
-			$this->_pkList[$pk] = $pk;
+			if (null !== $this->_pkList)
+			{
+				foreach ($pkList as $k=>$v)
+				{
+					if (!in_array($v,$this->_pkList))
+					{
+						unset($pkList[$k]);
+					}
+				}
+			}
+			$this->_pkList = $pkList;
 		}
 
 		return $this;

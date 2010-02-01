@@ -1,6 +1,6 @@
 <?php
 
-class AgsLucifer extends CComponent
+abstract class AgsLucifer extends CComponent
 {
 	public function init()
 	{
@@ -9,10 +9,8 @@ class AgsLucifer extends CComponent
 		echo '</pre>';
 	}
 
-	private function doEvil()
-	{
-		/**
-		 * write evil codes here
-		 */
-	}
+	/**
+	 * write evil codes here
+	 */
+	private function doEvil();
 }

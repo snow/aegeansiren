@@ -20,7 +20,7 @@ class AgsController extends CController
 
 		if (!isset($params['docClass']))
 		{
-			$params['docClass'] = 'w950';
+			$params['docClass'] = 'w960';
 		}
 
 		if (!isset($fragments['header']))
