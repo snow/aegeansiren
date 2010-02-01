@@ -4,7 +4,7 @@ class AgsHtml extends CHtml
 {
 	public static function hideOnEmpty($attribute)
 	{
-		return empty($attribute)?'hide':'';
+		return empty($attribute)?'s-h':'';
 	}
 
 	public static function activeStampField($model,$attribute,$htmlOptions=array())
