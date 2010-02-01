@@ -19,6 +19,9 @@ class AgsMTA extends CComponent
 		require_once 'class.phpmailer.php';
 
 		$params = array_merge(array(
+			'to'=>array(),
+			'cc'=>array(),
+			'bcc'=>array(),
 			'from'=>array(
 				'addr'=>Yii::app()->params['sysmailAddr'],
 				'name'=>Yii::app()->params['sysmailName'],
