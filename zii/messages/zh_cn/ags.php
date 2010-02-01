@@ -3,6 +3,7 @@ return array(
 	/**
 	 * misc
 	 */
+	'index'=>'首页',
 	'notification'=>'通知',
     'newFeature'=>'号外',
 	'dismiss'=>'知道了',
@@ -18,6 +19,8 @@ return array(
 	'register'=>'注册',
 	'login'=>'登录',
 	'logout'=>'注销',
+	'save'=>'保存',
+	'submit'=>'提交',
 	'comingSoon'=>'<h1>Coming soon</h1>',
 	'uncategorized'=>'未分类',
 	'longDate'=>'{year}年{month}月{day}日',
@@ -27,6 +30,7 @@ return array(
 	'resentActivateMail'=>'包含激活链接的邮件已经发送到你邮箱。如果没有找到，不妨检查一下垃圾邮件。',
 	'recoverPassword:mail:subject'=>'{name}，您的重设密码邮件',
 	'recoverPassword:mail:body'=>'{name}，别着急，我们来救你了~<br />点击下面的链接<p><a href="{link}">{link}</a></p>或者把链接复制到浏览器的地址栏然后回车。',
+	'closeWindow'=>'关闭本窗口',
 	/**
 	 * error
 	 */
