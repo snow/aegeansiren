@@ -31,6 +31,8 @@ return array(
 	'recoverPassword:mail:subject'=>'{name}，您的重设密码邮件',
 	'recoverPassword:mail:body'=>'{name}，别着急，我们来救你了~<br />点击下面的链接<p><a href="{link}">{link}</a></p>或者把链接复制到浏览器的地址栏然后回车。',
 	'closeWindow'=>'关闭本窗口',
+	'sad'=>'/. .\\',
+	'happy'=>'\(^__^)/',
 	/**
 	 * error
 	 */
