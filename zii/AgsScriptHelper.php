@@ -97,7 +97,7 @@ class AgsScriptHelper extends CComponent
 		{
 			$cssContent .= file_get_contents($this->_cssPath.'/'.$cssFile);
 		}
-		$cssContent = preg_replace('/\/\*+.+\*+\/|\/\*+\s*\n|\*+\s+.*\n|\*+\/\s*\n/','',$cssContent);
+		$cssContent = preg_replace('/\/\*+.+\*+\/|\/\*+\s*\n|\*+\s+(?!html).*\n|\*+\/\s*\n/','',$cssContent);
 		$cssContent = preg_replace('/@CHARSET.+\n/i','',$cssContent);
 		$rulesTmp = explode('}',$cssContent);
 		$rules = array();
@@ -162,44 +162,97 @@ class AgsScriptHelper extends CComponent
 		if ($isProperty)
 		{
 			/* IE 6 and below */
-			if ((0 === strpos($rule,'* html'))
-				&& (('IE' !== $this->_browser->browser) || (6 < (int)$this->_browser->majorver)))
+			if (in_array(substr($rule,0,1),array('_','-')))
 			{
-				return '';
+				if (('IE' === $this->_browser->browser) && (7 > (int)$this->_browser->majorver))
+				{
+					return trim(substr($rule,1));
+				}
+				else
+				{
+					return '';
+				}
+			}
+			/* IE 7 and below */
+			if ('*'===substr($rule,0,1))
+			{
+				if (('IE' === $this->_browser->browser) && (8 > (int)$this->_browser->majorver))
+				{
+					return trim(substr($rule,1));
+				}
+				else
+				{
+					return '';
+				}
 			}
 		}
 		else
 		{
 			/* IE 6 and below */
-			if ((0 === strpos($rule,'* html'))
-				&& (('IE' !== $this->_browser->browser) || (6 < (int)$this->_browser->majorver)))
+			if (0 === strpos($rule,'* html'))
 			{
-				return '';
+				if (('IE' === $this->_browser->browser) && (7 > (int)$this->_browser->majorver))
+				{
+					return trim(substr($rule,6));
+				}
+				else
+				{
+					return '';
+				}
 			}
 			/* IE 7 only */
-			if ((0 === strpos($rule,'*:first-child+html'))
-				&& (('IE' !== $this->_browser->browser) || (7 !== (int)$this->_browser->majorver)))
+			if (0 === strpos($rule,'*:first-child+html'))
 			{
-				return '';
+				if (('IE' === $this->_browser->browser) && (7 === (int)$this->_browser->majorver))
+				{
+					return trim(substr($rule,18));
+				}
+				else
+				{
+					return '';
+				}
 			}
 			/* IE 7 and modern browsers only */
-			if ((0 === strpos($rule,'html>body'))
-				&& (('IE' === $this->_browser->browser) && (7 > (int)$this->_browser->majorver)))
+			if (0 === strpos($rule,'html>body'))
 			{
-				return '';
+				if (('IE' !== $this->_browser->browser) || (6 < (int)$this->_browser->majorver))
+				{
+					return trim(substr($rule,10));
+				}
+				else
+				{
+					return '';
+				}
+			}
+			if (false !== strpos($rule,'['))
+			{
+				if (('IE' !== $this->_browser->browser) || (6 < (int)$this->_browser->majorver))
+				{
+					return trim(substr($rule,10));
+				}
+				else
+				{
+					return '';
+				}
 			}
 			/* Modern browsers only (not IE 7) */
-			if ((0 === strpos($rule,'html>/**/body'))
-				&& (('IE' === $this->_browser->browser) && (8 > (int)$this->_browser->majorver)))
+			if (0 === strpos($rule,'html>/**/body'))
 			{
-				return '';
+				if (('IE' !== $this->_browser->browser) || (7 < (int)$this->_browser->majorver))
+				{
+					return trim(substr($rule,14));
+				}
+				else
+				{
+					return '';
+				}
 			}
 			/* Recent Opera versions 9 and below */
-			if ((0 === strpos($rule,'html:first-child'))
+			/*if ((0 === strpos($rule,'html:first-child'))
 				&& (('Opera' !== $this->_browser->browser) || (9 < (int)$this->_browser->majorver)))
 			{
 				return '';
-			}
+			}*/
 		}
 		return $rule;
 	}
