@@ -99,52 +99,51 @@ class AgsScriptHelper extends CComponent
 		}
 		$cssContent = preg_replace('/\/\*+.+\*+\/|\/\*+\s*\n|\*+\s+.*\n|\*+\/\s*\n/','',$cssContent);
 		$cssContent = preg_replace('/@CHARSET.+\n/i','',$cssContent);
-		$temp = explode('}',$cssContent);
+		$rulesTmp = explode('}',$cssContent);
 		$rules = array();
-		foreach ($temp as $e)
+		foreach ($rulesTmp as $ruleTmp)
 		{
-			$e = explode('{',$e);
-			/* the selector */
-			$e[0] = preg_replace('/[\s\n\r]+/',' ',$e[0]);
-			$e[0] = preg_replace('/,\s+/',',',$e[0]);
-			$e[0] = trim($e[0]);
-			/* attributes */
-			$e[1] = explode(';',$e[1]);
-			foreach ($e[1] as $attr)
+			list($selector,$propertyTmp) = explode('{',$ruleTmp);
+
+			if ('' === ($selector = $this->browserCssHackFilter(
+				trim(
+					preg_replace('/,\s+/',',',
+						preg_replace('/[\s\n\r]+/',' ',$selector)
+					)
+				)
+			))) continue;
+
+			$propertities = explode(';',$propertyTmp);
+			foreach ($propertities as $propertyStr)
 			{
-				if ('' !== trim($attr))
+				list($property,$value) = explode(':',$propertyStr);
+
+				if ('' === ($property = $this->browserCssHackFilter(
+					preg_replace('/[\s\n\r]+/','',$property),true)
+				)) continue;
+
+				if (('' !== ($value = trim(preg_replace('/[\s\n\r]+/',' ',$value))))
+					&&(!isset($rules[$selector][$property])
+						|| (false === strpos($rules[$selector][$property],'!important'))))
 				{
-					$temp = explode(':',$attr);
-					$temp[0] = preg_replace('/[\s\n\r]+/','',$temp[0]);
-					/* attr name */
-					if ('' !== $temp[0])
-					{
-						$temp[1] = preg_replace('/[\s\n\r]+/',' ',$temp[1]);
-						$temp[1] = trim($temp[1]);
-						/* attr value */
-						if ('' !== $temp[1])
-						{
-							$rules[$e[0]][$temp[0]] = $temp[1];
-						}
-					}
+					$rules[$selector][$property] = $value;
 				}
 			}
-
 		}
-		$cssContent = '@CHARSET "UTF-8";'.(YII_DEBUG?chr(10):'');
-		foreach ($rules as $selector=>$attributes)
+		$cssContent = '@charset "utf-8";'.(YII_DEBUG?chr(10):'');
+		foreach ($rules as $selector=>$propertities)
 		{
-			$attrStr = array();
-			foreach ($attributes as $attr=>$value)
+			$propertyStr = array();
+			foreach ($propertities as $property=>$value)
 			{
-				$attrStr[] = $attr.':'.$value;
+				$propertyStr[] = $property.':'.$value;
 			}
-			$cssContent .= $selector.'{'.implode(';',$attrStr).'}'.(YII_DEBUG?chr(10):'');
+			$cssContent .= $selector.'{'.implode(';',$propertyStr).'}'.(YII_DEBUG?chr(10):'');
 		}
 		file_put_contents($this->_cssPath.'/'.$this->_cssClientFiles[$clientFile],$cssContent);
 	}
 
-	public function cleanCssFile($clientFile)
+	protected function cleanCssFile($clientFile)
 	{
 		if ($dir = opendir($this->_cssPath))
 		{
@@ -156,5 +155,52 @@ class AgsScriptHelper extends CComponent
 				}
 			}
 		}
+	}
+
+	protected function browserCssHackFilter($rule,$isProperty=false)
+	{
+		if ($isProperty)
+		{
+			/* IE 6 and below */
+			if ((0 === strpos($rule,'* html'))
+				&& (('IE' !== $this->_browser->browser) || (6 < (int)$this->_browser->majorver)))
+			{
+				return '';
+			}
+		}
+		else
+		{
+			/* IE 6 and below */
+			if ((0 === strpos($rule,'* html'))
+				&& (('IE' !== $this->_browser->browser) || (6 < (int)$this->_browser->majorver)))
+			{
+				return '';
+			}
+			/* IE 7 only */
+			if ((0 === strpos($rule,'*:first-child+html'))
+				&& (('IE' !== $this->_browser->browser) || (7 !== (int)$this->_browser->majorver)))
+			{
+				return '';
+			}
+			/* IE 7 and modern browsers only */
+			if ((0 === strpos($rule,'html>body'))
+				&& (('IE' === $this->_browser->browser) && (7 > (int)$this->_browser->majorver)))
+			{
+				return '';
+			}
+			/* Modern browsers only (not IE 7) */
+			if ((0 === strpos($rule,'html>/**/body'))
+				&& (('IE' === $this->_browser->browser) && (8 > (int)$this->_browser->majorver)))
+			{
+				return '';
+			}
+			/* Recent Opera versions 9 and below */
+			if ((0 === strpos($rule,'html:first-child'))
+				&& (('Opera' !== $this->_browser->browser) || (9 < (int)$this->_browser->majorver)))
+			{
+				return '';
+			}
+		}
+		return $rule;
 	}
 }
