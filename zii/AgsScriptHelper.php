@@ -17,9 +17,24 @@
  * 		),
  * ),
  *
- * this will get you base-default.css,base-ie-8.css,base-ie-7.css and base-ie-6.css
- * each contains only css rules for the associated browser
+ * and main.css contains
+ * .example {
+ *    font-size:10px;
+ *    *font-size:7px;
+ * }
+ * * html .example {
+ *    font-size:6px;
+ * }
  *
+ * then,call Yii::app()->scriptHelper->getCss('base') in header
+ * will give IE6 user base-ie-6.css contains
+ * .example{font-size:6px}
+ * IE7 user base-ie-7.css contains
+ * .example{font-size:7px}
+ * and FF and chrome .etc users base-default.css contains
+ * .example{font-size:10px}
+ *
+ * @package AgeanSiren
  * @author Snow.Hellsing snow.hellsing@gmail.com
  * @link http://twitter.com/snowhs
  * @license GPLv3
