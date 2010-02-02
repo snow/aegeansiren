@@ -12,5 +12,5 @@ abstract class AgsLucifer extends CComponent
 	/**
 	 * write evil codes here
 	 */
-	private function doEvil();
+	abstract protected function doEvil();
 }
