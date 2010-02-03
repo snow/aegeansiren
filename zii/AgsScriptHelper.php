@@ -138,7 +138,7 @@ class AgsScriptHelper extends CComponent
 					$mtimes[] = filemtime($this->_cssPath.'/'.$cssFile);
 				}
 				$lastM = max($mtimes);
-				$filename = $basefilename.'-'.$lastM.'.css';
+				$this->_cssClientFiles[$clientFile] = $basefilename.'-'.$lastM.'.css';
 				/*
 				 * the latest css file not generated,let's clean old file(s) and generate the new one
 				 */
@@ -155,11 +155,9 @@ class AgsScriptHelper extends CComponent
 				 * let's do the update job manually
 				 * to save user loading time
 				 */
-				$filename = $basefilename.'.css';
+				$this->_cssClientFiles[$clientFile] = $basefilename.'.css';
 			}
-			$this->_cssClientFiles[$clientFile] = $filename;
 		}
-
 
 		return $this->_cssClientFiles[$clientFile];
 	}
@@ -187,7 +185,7 @@ class AgsScriptHelper extends CComponent
 					preg_replace('/,\s+/',',',
 						preg_replace('/[\s\n\r]+/',' ',$selector)
 					)
-				)
+				),$clientFile
 			))) continue;
 
 			$propertities = explode(';',$propertyTmp);
@@ -196,7 +194,7 @@ class AgsScriptHelper extends CComponent
 				list($property,$value) = explode(':',$propertyStr);
 				/* if it is not a property or not use for current user agent,ignore it */
 				if ('' === ($property = $this->browserCssHackFilter(
-					preg_replace('/[\s\n\r]+/','',$property),true)
+					preg_replace('/[\s\n\r]+/','',$property),$clientFile,true)
 				)) continue;
 
 				if (('' !== ($value = trim(preg_replace('/[\s\n\r]+/',' ',$value))))
@@ -240,7 +238,7 @@ class AgsScriptHelper extends CComponent
 		}
 	}
 
-	protected function browserCssHackFilter($rule,$isProperty=false)
+	protected function browserCssHackFilter($rule,$clientFile,$isProperty=false)
 	{
 		/*
 		 * if the selector or property match some special format
@@ -250,29 +248,83 @@ class AgsScriptHelper extends CComponent
 		 */
 		if ($isProperty)
 		{
-			/* IE 6 and below */
-			if (in_array(substr($rule,0,1),array('_','-')))
+			switch (substr($rule,0,1))
 			{
-				if (('IE' === $this->_browser->browser) && (7 > (int)$this->_browser->majorver))
-				{
-					return trim(substr($rule,1));
-				}
-				else
-				{
-					return '';
-				}
-			}
-			/* IE 7 and below */
-			if ('*'===substr($rule,0,1))
-			{
-				if (('IE' === $this->_browser->browser) && (8 > (int)$this->_browser->majorver))
-				{
-					return trim(substr($rule,1));
-				}
-				else
-				{
-					return '';
-				}
+				case '-':
+					/*
+					 * enable when gecko is not treated specially
+					 * or (is gecko and is not "like gecko")
+					 */
+					if ('moz-' === substr($rule,1,4))
+					{
+						if (!(isset($this->cssMap[$clientFile]['specialBrowsers']['Gecko'])
+							|| in_array('Gecko',$this->cssMap[$clientFile]['specialBrowsers']))
+								|| preg_match('/(?<!like\s)Gecko/',$this->_browser->browser_name_pattern))
+						{
+							return $rule;
+						}
+						else
+						{
+							return '';
+						}
+					}
+					/*
+					 * enable when webkit is not treated speacilly
+					 * or is webkit
+					 */
+					if ('webkit-' === substr($rule,1,7))
+					{
+						if (!(isset($this->cssMap[$clientFile]['specialBrowsers']['Webkit'])
+							|| in_array('Webkit',$this->cssMap[$clientFile]['specialBrowsers']))
+								|| (false !== strpos($this->_browser->browser_name_pattern,'Webkit')))
+						{
+							return $rule;
+						}
+						else
+						{
+							return '';
+						}
+					}
+					/*
+					 * enable when khtml is not treated speacilly
+					 * or (is khtml and not "(khtml*)" )
+					 */
+					if ('khtml-' === substr($rule,1,6))
+					{
+						if (!(isset($this->cssMap[$clientFile]['specialBrowsers']['KHTML'])
+							|| in_array('KHTML',$this->cssMap[$clientFile]['specialBrowsers']))
+								|| preg_match('/(?<!\()KHTML/',$this->_browser->browser_name_pattern))
+						{
+							return $rule;
+						}
+						else
+						{
+							return '';
+						}
+					}
+				/* no break */
+				/* IE 6 and below */
+				case '_':
+					if (('IE' === $this->_browser->browser) && (7 > (int)$this->_browser->majorver))
+					{
+						return trim(substr($rule,1));
+					}
+					else
+					{
+						return '';
+					}
+				break;
+				/* IE 7 and below */
+				case '*':
+					if (('IE' === $this->_browser->browser) && (8 > (int)$this->_browser->majorver))
+					{
+						return trim(substr($rule,1));
+					}
+					else
+					{
+						return '';
+					}
+				break;
 			}
 		}
 		else
