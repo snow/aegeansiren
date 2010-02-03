@@ -12,7 +12,7 @@
  *        'cssMap'=>array(
  *            'base'=>array(
  *                'files'=>array('main.css'),
- *                'specialBrowsers'=>array('IE'=>array(8,7,6)),
+ *                'specialBrowsers'=>array('trident'=>array(8,7,6)),
  *            ),
  *         ),
  * ),
@@ -44,6 +44,8 @@ class AgsScriptHelper extends CComponent
     public $cssMap;
     public $cssPathAlias = 'webroot.css';
     protected $_browser;
+    protected $_browserEngine;
+    protected $_browserMVer;
     protected $_cssPath;
     protected $_cssClientFiles = array();
     protected $_cssLastModify;
@@ -51,6 +53,7 @@ class AgsScriptHelper extends CComponent
     public function init()
     {
         $this->_browser = get_browser();
+        $this->detectBrowserEngineAndVer();
         $this->_cssPath = Yii::getPathOfAlias($this->cssPathAlias);
         if (!is_array($this->cssMap))
         {
@@ -60,148 +63,175 @@ class AgsScriptHelper extends CComponent
 
     public function getCss($clientFile)
     {
-        $basefilename = $clientFile;
         /*
          * compute filename
          * assign special filename to special browser
          * so later could generate special css for it
          */
-        if (!isset($this->_cssClientFiles[$clientFile]))
+        if (!file_exists($this->_cssPath.'/'.$this->getCssFileName($clientFile)))
         {
-            $basefilename .= '-'.$this->detectBrowserType($clientFile);
-
-            if (YII_DEBUG)
-            {
-                /*
-                 * in developing mode
-                 * detect the last modify time of all to-merge css files
-                 * and append it to the generated file
-                 * so when we modified the source css files
-                 * the geerated file will be updated automaticly
-                 */
-                $this->_cssClientFiles[$clientFile] = $basefilename
-                    .'-'.$this->detectCssLastModify($clientFile).'.css';
-                /*
-                 * the latest css file not generated,let's clean old file(s) and generate the new one
-                 */
-                if (!file_exists($this->_cssPath.'/'.$this->_cssClientFiles[$clientFile]))
-                {
-                    $this->cleanCssFile($basefilename);
-                    $this->genCssFile($clientFile);
-                }
-            }
-            else
-            {
-                /*
-                 * in production mode
-                 * let's do the update job manually
-                 * to save user loading time
-                 */
-                $this->_cssClientFiles[$clientFile] = $basefilename.'.css';
-            }
-        }
-
-        return $this->_cssClientFiles[$clientFile];
-    }
-
-    public function updateCss($clientFile)
-    {
-    	$basefilename = $clientFile;
-        /*
-         * compute filename
-         * assign special filename to special browser
-         * so later could generate special css for it
-         */
-        if (!isset($this->_cssClientFiles[$clientFile]))
-        {
-            $basefilename .= '-'.$this->detectBrowserType($clientFile);
-
-            if (YII_DEBUG)
-            {
-                /*
-                 * in developing mode
-                 * detect the last modify time of all to-merge css files
-                 * and append it to the generated file
-                 * so when we modified the source css files
-                 * the geerated file will be updated automaticly
-                 */
-                $this->_cssClientFiles[$clientFile] = $basefilename
-                    .'-'.$this->detectCssLastModify($clientFile).'.css';
-            }
-            else
-            {
-                /*
-                 * in production mode
-                 * let's do the update job manually
-                 * to save user loading time
-                 */
-                $this->_cssClientFiles[$clientFile] = $basefilename.'.css';
-            }
-            $this->cleanCssFile($basefilename);
             $this->genCssFile($clientFile);
         }
-
-        return $this->_cssClientFiles[$clientFile];
+        return $this->getCssFileName($clientFile);
+    }
+    /**
+     * remove all generated css files and regenerate
+     */
+    public function updateCss()
+    {
+    	foreach ($this->cssMap as $clientFile=>$config)
+    	{
+    		$this->cleanCssFile($clientFile);
+    		if (is_array($config['specialBrowsers']))
+    		{
+    			foreach ($config['specialBrowsers'] as $k=>$v)
+    			{
+    				if (is_array($v))
+    				{
+    					$this->_browserEngine = $k;
+    					foreach ($v as $version)
+    					{
+    						$this->_browserMVer = $version;
+    						$this->_cssClientFiles[$clientFile] = null;
+    						$this->genCssFile($clientFile);
+    					}
+    				}
+    				else
+    				{
+    					$this->_browserEngine = $v;
+    					$this->_browserMVer = null;
+    					$this->_cssClientFiles[$clientFile] = null;
+    					$this->genCssFile($clientFile);
+    				}
+    			}
+    		}
+    		/* gen the default one */
+    		$this->_browserEngine = 'SOME_NON_EXIST_BROWSER_ENGINE';
+            $this->_browserMVer = null;
+            $this->_cssClientFiles[$clientFile] = null;
+            $this->genCssFile($clientFile);
+    	}
+    	/* restore configs */
+    	$this->detectBrowserEngineAndVer();
     }
 
-    protected function detectCssLastModify($clientFile)
+    protected function detectBrowserEngineAndVer()
     {
-        if (null === $this->_cssLastModify)
+    	$this->_browserMVer = (int)$this->_browser->majorver;
+    	/* all IE.I'm not sure if IE9 will have new engine */
+        if ('IE' === $this->_browser->browser && $this->_browserMVer < 9)
         {
-        	$mtimes = array();
-	        foreach ($this->cssMap[$clientFile]['files'] as $cssFile)
-	        {
-	            $mtimes[] = filemtime($this->_cssPath.'/'.$cssFile);
-	        }
-	        $this->_cssLastModify = max($mtimes);
+            $this->_browserEngine = 'trident';
         }
-        return $this->_cssLastModify;
+        /* has Gecko and not "like Gecko" */
+        elseif (preg_match('/(?<!like\s)Gecko/i',$this->_browser->browser_name_pattern))
+        {
+        	$this->_browserEngine = 'gecko';
+        }
+        /* has WebKit */
+        elseif (false !== strpos($this->_browser->browser_name_pattern,'Webkit'))
+        {
+            $this->_browserEngine = 'webkit';
+        }
+        /* has KHTML and not "(KHTML*)" */
+        elseif (preg_match('/(?<!\()KHTML/',$this->_browser->browser_name_pattern))
+        {
+            $this->_browserEngine = 'khtml';
+        }
+        else
+        {
+        	$this->_browserEngine = strtolower($this->_browser->browser);
+        }
+    }
+
+    protected function getCssFileName($clientFile)
+    {
+        if (!$this->_cssClientFiles[$clientFile])
+        {
+	        $this->_cssClientFiles[$clientFile] = $clientFile.'-'.$this->detectBrowserType($clientFile);
+	        if (YII_DEBUG)
+	        {
+	            /*
+	             * in developing mode
+	             * detect the last modify time of all to-merge css files
+	             * and append it to the generated file
+	             * so when we modified the source css files
+	             * the geerated file will be updated automaticly
+	             */
+	            $mtimes = array();
+	            foreach ($this->cssMap[$clientFile]['files'] as $cssFile)
+	            {
+	                $mtimes[] = filemtime($this->_cssPath.'/'.$cssFile);
+	            }
+	            $this->_cssClientFiles[$clientFile] .= '-'.max($mtimes).'.css';
+	        }
+	        else
+	        {
+	            /*
+	             * in production mode
+	             * let's do the update job manually
+	             * to save user loading time
+	             */
+	            $this->_cssClientFiles[$clientFile] .= '.css';
+	        }
+        }
+        return $this->_cssClientFiles[$clientFile];
     }
 
     protected function detectBrowserType($clientFile)
     {
         /*
-         * match something like 'specialBrowsers'=>array('IE','Opera')
+         * match something like 'specialBrowsers'=>array('trident','Opera')
          */
-        if (in_array($this->_browser->browser,$this->cssMap[$clientFile]['specialBrowsers']))
+        if (in_array($this->_browserEngine,$this->cssMap[$clientFile]['specialBrowsers']))
         {
-            return $this->_browser->browser;
+            return $this->_browserEngine;
         }
         /*
-         * like 'specialBrowsers'=>array('IE'=>array(6,7,8))
+         * like 'specialBrowsers'=>array('trident'=>array(6,7,8))
          */
-        elseif (is_array($browser = $this->cssMap[$clientFile]['specialBrowsers'][$this->_browser->browser]))
+        elseif (is_array($browser = $this->cssMap[$clientFile]['specialBrowsers'][$this->_browserEngine]))
         {
-            $ver = (int)$this->_browser->majorver;
-            if (in_array($ver,$browser))
+            $ver = $this->_browserMVer;
+            if (!in_array($ver,$browser))
             {
-                return $this->_browser->browser.'-'.$ver;
-            }
-            else
-            {
-                for ($i = $ver;$i>=min($browser);$i--)
+                /*
+                 * if version of current browser is not given in config array
+                 * first search down for a nearest version
+                 * then search up
+                 */
+            	$notfound = true;
+            	for ($i = $ver;$i>=min($browser);$i--)
                 {
                     if (in_array($i,$browser))
                     {
-                        return $this->_browser->browser.'-'.$i;
+                        $ver = $i;
+                        $notfound = false;
+                        break;
                     }
                 }
-                if (null === $this->_cssClientFile)
+                if ($notfound)
                 {
                     for ($i = $ver;$i<=max($browser);$i++)
                     {
                         if (in_array($i,$browser))
                         {
-                            return $this->_browser->browser.'-'.$i;
+                            $ver = $i;
+	                        $notfound = false;
+	                        break;
                         }
                     }
                 }
-                /* something is wrong if we got here */
-                throw new CException(Y::t('ags','Could not detemin finename for {browser}{ver}',array(
-                    '{browser}'=>$this->_browser->browser,
-                    '{ver}'=>$ver,
-                )));
+                if ($notfound)
+                {
+                    /* something is wrong if we got here */
+                	throw new CException(Y::t('ags','Could not detemin finename for {browser}{ver}',array(
+	                    '{browser}'=>$this->_browserEngine,
+	                    '{ver}'=>$ver,
+	                )));
+                }
             }
+            return $this->_browserEngine.'-'.$ver;
         }
         /*
          * thank stars
@@ -270,7 +300,7 @@ class AgsScriptHelper extends CComponent
             }
             $cssContent .= $selector.'{'.implode(';',$propertyStr).'}'.(YII_DEBUG?chr(10):'');
         }
-        file_put_contents($this->_cssPath.'/'.$this->_cssClientFiles[$clientFile],$cssContent);
+        file_put_contents($this->_cssPath.'/'.$this->getCssFileName($clientFile),$cssContent);
     }
 
     protected function cleanCssFile($clientFile)
@@ -280,7 +310,7 @@ class AgsScriptHelper extends CComponent
             while ($file = readdir($dir))
             {
                 /* if it starts with the basefilename like "base-default",it's to remove */
-                if (0 === strpos($file,$clientFile))
+                if (0 === strpos($file,$clientFile.'-'))
                 {
                     unlink($this->_cssPath.'/'.$file);
                 }
@@ -301,16 +331,13 @@ class AgsScriptHelper extends CComponent
             switch (substr($rule,0,1))
             {
                 case '-':
-                    /*
-                     * enable when gecko is not treated specially
-                     * or (is gecko and is not "like gecko")
-                     */
+                    /* enable when gecko is not treated specially or is gecko */
                     if ('moz-' === substr($rule,1,4))
                     {
                         if ((('default' === $this->detectBrowserType($clientFile))
-                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['Gecko'])
-                                    || in_array('Gecko',$this->cssMap[$clientFile]['specialBrowsers']))) )
-                            || preg_match('/(?<!like\s)Gecko/',$this->_browser->browser_name_pattern))
+                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['gecko'])
+                                    || in_array('gecko',$this->cssMap[$clientFile]['specialBrowsers']))) )
+                            || ('gecko' === $this->_browserEngine))
                         {
                             return $rule;
                         }
@@ -319,16 +346,13 @@ class AgsScriptHelper extends CComponent
                             return '';
                         }
                     }
-                    /*
-                     * enable when webkit is not treated speacilly
-                     * or is webkit
-                     */
+                    /* enable when webkit is not treated speacilly or is webkit */
                     if ('webkit-' === substr($rule,1,7))
                     {
                         if ((('default' === $this->detectBrowserType($clientFile))
-                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['Webkit'])
-                                    || in_array('Webkit',$this->cssMap[$clientFile]['specialBrowsers']))))
-                            || (false !== strpos($this->_browser->browser_name_pattern,'Webkit')))
+                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['webkit'])
+                                    || in_array('webkit',$this->cssMap[$clientFile]['specialBrowsers']))))
+                            || ('webkit' === $this->_browserEngine))
                         {
                             return $rule;
                         }
@@ -337,16 +361,13 @@ class AgsScriptHelper extends CComponent
                             return '';
                         }
                     }
-                    /*
-                     * enable when khtml is not treated speacilly
-                     * or (is khtml and not "(khtml*)" )
-                     */
+                    /* enable when khtml is not treated speacilly or is khtml */
                     if ('khtml-' === substr($rule,1,6))
                     {
                         if ((('default' === $this->detectBrowserType($clientFile))
-                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['KHTML'])
-                                    || in_array('KHTML',$this->cssMap[$clientFile]['specialBrowsers']))))
-                            || preg_match('/(?<!\()KHTML/',$this->_browser->browser_name_pattern))
+                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['khtml'])
+                                    || in_array('khtml',$this->cssMap[$clientFile]['specialBrowsers']))))
+                            || ('khtml' === $this->_browserEngine))
                         {
                             return $rule;
                         }
@@ -358,7 +379,7 @@ class AgsScriptHelper extends CComponent
                 /* no break */
                 /* IE 6 and below */
                 case '_':
-                    if (('IE' === $this->_browser->browser) && (7 > (int)$this->_browser->majorver))
+                    if (('trident' === $this->_browserEngine) && (7 > $this->_browserMVer))
                     {
                         return trim(substr($rule,1));
                     }
@@ -369,7 +390,7 @@ class AgsScriptHelper extends CComponent
                 break;
                 /* IE 7 and below */
                 case '*':
-                    if (('IE' === $this->_browser->browser) && (8 > (int)$this->_browser->majorver))
+                    if (('trident' === $this->_browserEngine) && (8 > $this->_browserMVer))
                     {
                         return trim(substr($rule,1));
                     }
@@ -385,7 +406,7 @@ class AgsScriptHelper extends CComponent
             /* IE 6 and below */
             if (0 === strpos($rule,'* html'))
             {
-                if (('IE' === $this->_browser->browser) && (7 > (int)$this->_browser->majorver))
+                if (('trident' === $this->_browserEngine) && (7 > $this->_browserMVer))
                 {
                     return trim(substr($rule,6));
                 }
@@ -397,7 +418,7 @@ class AgsScriptHelper extends CComponent
             /* IE 7 only */
             if (0 === strpos($rule,'*:first-child+html'))
             {
-                if (('IE' === $this->_browser->browser) && (7 === (int)$this->_browser->majorver))
+                if (('trident' === $this->_browserEngine) && (7 === $this->_browserMVer))
                 {
                     return trim(substr($rule,18));
                 }
@@ -409,7 +430,7 @@ class AgsScriptHelper extends CComponent
             /* IE 7 and modern browsers only */
             if (0 === strpos($rule,'html>body'))
             {
-                if (('IE' !== $this->_browser->browser) || (6 < (int)$this->_browser->majorver))
+                if (('trident' !== $this->_browserEngine) || (6 < $this->_browserMVer))
                 {
                     return trim(substr($rule,10));
                 }
@@ -420,9 +441,9 @@ class AgsScriptHelper extends CComponent
             }
             if (false !== strpos($rule,'['))
             {
-                if (('IE' !== $this->_browser->browser) || (6 < (int)$this->_browser->majorver))
+                if (('trident' !== $this->_browserEngine) || (6 < $this->_browserMVer))
                 {
-                    return trim(substr($rule,10));
+                    return $rule;
                 }
                 else
                 {
@@ -432,7 +453,7 @@ class AgsScriptHelper extends CComponent
             /* Modern browsers only (not IE 7) */
             if (0 === strpos($rule,'html>/**/body'))
             {
-                if (('IE' !== $this->_browser->browser) || (7 < (int)$this->_browser->majorver))
+                if (('trident' !== $this->_browserEngine) || (7 < $this->_browserMVer))
                 {
                     return trim(substr($rule,14));
                 }
