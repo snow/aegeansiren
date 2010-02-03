@@ -46,6 +46,7 @@ class AgsScriptHelper extends CComponent
     protected $_browser;
     protected $_cssPath;
     protected $_cssClientFiles = array();
+    protected $_cssLastModify;
 
     public function init()
     {
@@ -78,14 +79,8 @@ class AgsScriptHelper extends CComponent
                  * so when we modified the source css files
                  * the geerated file will be updated automaticly
                  */
-                $lastM = 0;
-                $mtimes = array();
-                foreach ($this->cssMap[$clientFile]['files'] as $cssFile)
-                {
-                    $mtimes[] = filemtime($this->_cssPath.'/'.$cssFile);
-                }
-                $lastM = max($mtimes);
-                $this->_cssClientFiles[$clientFile] = $basefilename.'-'.$lastM.'.css';
+                $this->_cssClientFiles[$clientFile] = $basefilename
+                    .'-'.$this->detectCssLastModify($clientFile).'.css';
                 /*
                  * the latest css file not generated,let's clean old file(s) and generate the new one
                  */
@@ -107,6 +102,60 @@ class AgsScriptHelper extends CComponent
         }
 
         return $this->_cssClientFiles[$clientFile];
+    }
+
+    public function updateCss($clientFile)
+    {
+    	$basefilename = $clientFile;
+        /*
+         * compute filename
+         * assign special filename to special browser
+         * so later could generate special css for it
+         */
+        if (!isset($this->_cssClientFiles[$clientFile]))
+        {
+            $basefilename .= '-'.$this->detectBrowserType($clientFile);
+
+            if (YII_DEBUG)
+            {
+                /*
+                 * in developing mode
+                 * detect the last modify time of all to-merge css files
+                 * and append it to the generated file
+                 * so when we modified the source css files
+                 * the geerated file will be updated automaticly
+                 */
+                $this->_cssClientFiles[$clientFile] = $basefilename
+                    .'-'.$this->detectCssLastModify($clientFile).'.css';
+            }
+            else
+            {
+                /*
+                 * in production mode
+                 * let's do the update job manually
+                 * to save user loading time
+                 */
+                $this->_cssClientFiles[$clientFile] = $basefilename.'.css';
+            }
+            $this->cleanCssFile($basefilename);
+            $this->genCssFile($clientFile);
+        }
+
+        return $this->_cssClientFiles[$clientFile];
+    }
+
+    protected function detectCssLastModify($clientFile)
+    {
+        if (null === $this->_cssLastModify)
+        {
+        	$mtimes = array();
+	        foreach ($this->cssMap[$clientFile]['files'] as $cssFile)
+	        {
+	            $mtimes[] = filemtime($this->_cssPath.'/'.$cssFile);
+	        }
+	        $this->_cssLastModify = max($mtimes);
+        }
+        return $this->_cssLastModify;
     }
 
     protected function detectBrowserType($clientFile)
