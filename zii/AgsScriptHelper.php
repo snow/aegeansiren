@@ -1,10 +1,9 @@
 <?php
 /**
  * A helper class that could use for
- * 1.merge css files into one
- * 2.generate different css file for different browser
- *  filter special css rule like * html {} for ie6 to show in only css file for ie6
- *     and give user correct file depends on user-agent
+ * generate css file that merged from one or more source
+ * for different client browser,assign different version of generated css
+ * which doesn't contain css hacks that not work for this browsert
  *
  * config exzample:
  * 'scriptHelper'=>array(
@@ -60,14 +59,14 @@ class AgsScriptHelper extends CComponent
             throw new CException(Y::t('ags',__CLASS__.'\'s param $cssMap is not configured correctly'));
         }
     }
-
+    /**
+     * return a css file name that associate to current visitor's browser without url path
+     * and will generate this file if it's not exist
+     *
+     * @param string $clientFile a generate css file which is configured in main config
+     */
     public function getCss($clientFile)
     {
-        /*
-         * compute filename
-         * assign special filename to special browser
-         * so later could generate special css for it
-         */
         if (!file_exists($this->_cssPath.'/'.$this->getCssFileName($clientFile)))
         {
             $this->genCssFile($clientFile);
@@ -75,50 +74,52 @@ class AgsScriptHelper extends CComponent
         return $this->getCssFileName($clientFile);
     }
     /**
-     * remove all generated css files and regenerate
+     * regenerate all css files and remove old ones
      */
     public function updateCss()
     {
-    	foreach ($this->cssMap as $clientFile=>$config)
-    	{
-    		$this->cleanCssFile($clientFile);
-    		if (is_array($config['specialBrowsers']))
-    		{
-    			foreach ($config['specialBrowsers'] as $k=>$v)
-    			{
-    				if (is_array($v))
-    				{
-    					$this->_browserEngine = $k;
-    					foreach ($v as $version)
-    					{
-    						$this->_browserMVer = $version;
-    						$this->_cssClientFiles[$clientFile] = null;
-    						$this->genCssFile($clientFile);
-    					}
-    				}
-    				else
-    				{
-    					$this->_browserEngine = $v;
-    					$this->_browserMVer = null;
-    					$this->_cssClientFiles[$clientFile] = null;
-    					$this->genCssFile($clientFile);
-    				}
-    			}
-    		}
-    		/* gen the default one */
-    		$this->_browserEngine = 'SOME_NON_EXIST_BROWSER_ENGINE';
+        foreach ($this->cssMap as $clientFile=>$config)
+        {
+            $this->cleanCssFile($clientFile);
+            if (is_array($config['specialBrowsers']))
+            {
+                foreach ($config['specialBrowsers'] as $k=>$v)
+                {
+                    if (is_array($v))
+                    {
+                        $this->_browserEngine = $k;
+                        foreach ($v as $version)
+                        {
+                            $this->_browserMVer = $version;
+                            $this->_cssClientFiles[$clientFile] = null;
+                            $this->genCssFile($clientFile);
+                        }
+                    }
+                    else
+                    {
+                        $this->_browserEngine = $v;
+                        $this->_browserMVer = null;
+                        $this->_cssClientFiles[$clientFile] = null;
+                        $this->genCssFile($clientFile);
+                    }
+                }
+            }
+            /* gen the default one */
+            $this->_browserEngine = 'SOME_NON_EXIST_BROWSER_ENGINE';
             $this->_browserMVer = null;
             $this->_cssClientFiles[$clientFile] = null;
             $this->genCssFile($clientFile);
-    	}
-    	/* restore configs */
-    	$this->detectBrowserEngineAndVer();
+        }
+        /* restore configs */
+        $this->detectBrowserEngineAndVer();
     }
-
+    /**
+     * init $_browserEngine and $_browserMVer accourding to current visitor's browser
+     */
     protected function detectBrowserEngineAndVer()
     {
-    	$this->_browserMVer = (int)$this->_browser->majorver;
-    	/* all IE.I'm not sure if IE9 will have new engine */
+        $this->_browserMVer = (int)$this->_browser->majorver;
+        /* all IE.I'm not sure if IE9 will have new engine */
         if ('IE' === $this->_browser->browser && $this->_browserMVer < 9)
         {
             $this->_browserEngine = 'trident';
@@ -126,7 +127,7 @@ class AgsScriptHelper extends CComponent
         /* has Gecko and not "like Gecko" */
         elseif (preg_match('/(?<!like\s)Gecko/i',$this->_browser->browser_name_pattern))
         {
-        	$this->_browserEngine = 'gecko';
+            $this->_browserEngine = 'gecko';
         }
         /* has WebKit */
         elseif (false !== strpos($this->_browser->browser_name_pattern,'Webkit'))
@@ -140,44 +141,53 @@ class AgsScriptHelper extends CComponent
         }
         else
         {
-        	$this->_browserEngine = strtolower($this->_browser->browser);
+            $this->_browserEngine = strtolower($this->_browser->browser);
         }
     }
-
+    /**
+     * compute filename of a client css
+     * different file version will be assigned to configured special browser
+     *
+     * @param string $clientFile
+     */
     protected function getCssFileName($clientFile)
     {
         if (!$this->_cssClientFiles[$clientFile])
         {
-	        $this->_cssClientFiles[$clientFile] = $clientFile.'-'.$this->detectBrowserType($clientFile);
-	        if (YII_DEBUG)
-	        {
-	            /*
-	             * in developing mode
-	             * detect the last modify time of all to-merge css files
-	             * and append it to the generated file
-	             * so when we modified the source css files
-	             * the geerated file will be updated automaticly
-	             */
-	            $mtimes = array();
-	            foreach ($this->cssMap[$clientFile]['files'] as $cssFile)
-	            {
-	                $mtimes[] = filemtime($this->_cssPath.'/'.$cssFile);
-	            }
-	            $this->_cssClientFiles[$clientFile] .= '-'.max($mtimes).'.css';
-	        }
-	        else
-	        {
-	            /*
-	             * in production mode
-	             * let's do the update job manually
-	             * to save user loading time
-	             */
-	            $this->_cssClientFiles[$clientFile] .= '.css';
-	        }
+            $this->_cssClientFiles[$clientFile] = $clientFile.'-'.$this->detectBrowserType($clientFile);
+            if (YII_DEBUG)
+            {
+                /*
+                 * in developing mode
+                 * detect the last modify time of all to-merge css files
+                 * and append it to the generated file
+                 * so when we modified the source css files
+                 * the geerated file will be updated automaticly
+                 */
+                $mtimes = array();
+                foreach ($this->cssMap[$clientFile]['files'] as $cssFile)
+                {
+                    $mtimes[] = filemtime($this->_cssPath.'/'.$cssFile);
+                }
+                $this->_cssClientFiles[$clientFile] .= '-'.max($mtimes).'.css';
+            }
+            else
+            {
+                /*
+                 * in production mode
+                 * let's do the update job manually
+                 * to save user loading time
+                 */
+                $this->_cssClientFiles[$clientFile] .= '.css';
+            }
         }
         return $this->_cssClientFiles[$clientFile];
     }
-
+    /**
+     * determine which version fits current browser
+     *
+     * @param string $clientFile
+     */
     protected function detectBrowserType($clientFile)
     {
         /*
@@ -200,8 +210,8 @@ class AgsScriptHelper extends CComponent
                  * first search down for a nearest version
                  * then search up
                  */
-            	$notfound = true;
-            	for ($i = $ver;$i>=min($browser);$i--)
+                $notfound = true;
+                for ($i = $ver;$i>=min($browser);$i--)
                 {
                     if (in_array($i,$browser))
                     {
@@ -217,18 +227,18 @@ class AgsScriptHelper extends CComponent
                         if (in_array($i,$browser))
                         {
                             $ver = $i;
-	                        $notfound = false;
-	                        break;
+                            $notfound = false;
+                            break;
                         }
                     }
                 }
                 if ($notfound)
                 {
                     /* something is wrong if we got here */
-                	throw new CException(Y::t('ags','Could not detemin finename for {browser}{ver}',array(
-	                    '{browser}'=>$this->_browserEngine,
-	                    '{ver}'=>$ver,
-	                )));
+                    throw new CException(Y::t('ags','Could not detemin finename for {browser}{ver}',array(
+                        '{browser}'=>$this->_browserEngine,
+                        '{ver}'=>$ver,
+                    )));
                 }
             }
             return $this->_browserEngine.'-'.$ver;
@@ -241,7 +251,11 @@ class AgsScriptHelper extends CComponent
             return 'default';
         }
     }
-
+    /**
+     * generate a client css file that fit current browser
+     *
+     * @param string $clientFile
+     */
     protected function genCssFile($clientFile)
     {
         /* load all files which to merge */
@@ -289,7 +303,7 @@ class AgsScriptHelper extends CComponent
          * now we got a array contains well processed rules
          * let's generate the css file
          */
-        /* append line break on in developing mode */
+        /* append line break in developing mode */
         $cssContent = '@charset "utf-8";'.(YII_DEBUG?chr(10):'');
         foreach ($rules as $selector=>$propertities)
         {
@@ -302,7 +316,11 @@ class AgsScriptHelper extends CComponent
         }
         file_put_contents($this->_cssPath.'/'.$this->getCssFileName($clientFile),$cssContent);
     }
-
+    /**
+     * remove all version of a generated client css file
+     *
+     * @param string $clientFile
+     */
     protected function cleanCssFile($clientFile)
     {
         if ($dir = opendir($this->_cssPath))
@@ -317,7 +335,13 @@ class AgsScriptHelper extends CComponent
             }
         }
     }
-
+    /**
+     * determine should the rule be include in current version client file
+     *
+     * @param string $rule a selector or a property name
+     * @param string $clientFile
+     * @param bool $isProperty default false.figure out is the rule a selector or a property
+     */
     protected function browserCssHackFilter($rule,$clientFile,$isProperty=false)
     {
         /*
