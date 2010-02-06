@@ -80,7 +80,6 @@ class AgsScriptHelper extends CComponent
     {
         foreach ($this->cssMap as $clientFile=>$config)
         {
-            $this->cleanCssFile($clientFile);
             if (is_array($config['specialBrowsers']))
             {
                 foreach ($config['specialBrowsers'] as $k=>$v)
@@ -314,26 +313,22 @@ class AgsScriptHelper extends CComponent
             }
             $cssContent .= $selector.'{'.implode(';',$propertyStr).'}'.(YII_DEBUG?chr(10):'');
         }
-        file_put_contents($this->_cssPath.'/'.$this->getCssFileName($clientFile),$cssContent);
-    }
-    /**
-     * remove all version of a generated client css file
-     *
-     * @param string $clientFile
-     */
-    protected function cleanCssFile($clientFile)
-    {
+        /**
+	     * remove all version of a generated client css file
+	     */
+        $filenamePattern = preg_replace('/\-\d+\.css/','',$this->getCssFileName($clientFile));
         if ($dir = opendir($this->_cssPath))
         {
             while ($file = readdir($dir))
             {
                 /* if it starts with the basefilename like "base-default",it's to remove */
-                if (0 === strpos($file,$clientFile.'-'))
+                if (0 === strpos($file,$filenamePattern))
                 {
                     unlink($this->_cssPath.'/'.$file);
                 }
             }
         }
+        file_put_contents($this->_cssPath.'/'.$this->getCssFileName($clientFile),$cssContent);
     }
     /**
      * determine should the rule be include in current version client file
@@ -355,6 +350,22 @@ class AgsScriptHelper extends CComponent
             switch (substr($rule,0,1))
             {
                 case '-':
+                    /* enable when ie8 is not treated specially or is ie8 */
+                	/* this is not a valid css hack */
+                    if ('t8-' === substr($rule,1,3))
+                    {
+                        if ((('default' === $this->detectBrowserType($clientFile))
+                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['trident'])
+                                    || in_array(8,$this->cssMap[$clientFile]['specialBrowsers']['trident']))) )
+                            || (('trident' === $this->_browserEngine) && (8 === $this->_browserMVer)))
+                        {
+                            return trim(substr($rule,4));
+                        }
+                        else
+                        {
+                            return '';
+                        }
+                    }
                     /* enable when gecko is not treated specially or is gecko */
                     if ('moz-' === substr($rule,1,4))
                     {
