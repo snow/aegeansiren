@@ -39,11 +39,11 @@ abstract class AgsAR extends CActiveRecord
 
     public function getAttributeDefault($attribute)
     {
-        $value = Y::t('ags',get_class($this).':'.$attribute.':default');
+        $value = Y::t('local',get_class($this).':'.$attribute.':default');
 
         if (get_class($this).':'.$attribute.':default' === $value)
         {
-            $value = Y::t('ags',get_class($this).':'.$attribute);
+            $value = Y::t('local',get_class($this).':'.$attribute);
 
             if (get_class($this).':'.$attribute === $value)
             {

@@ -7,13 +7,47 @@ class AgsHtml extends CHtml
         return empty($attribute)?'s-h':'';
     }
 
+    public static function activeTextField($model,$attribute,$htmlOptions=array())
+    {
+        if (!isset($htmlOptions['value']) && $htmlOptions['default'])
+        {
+            $attrWithoutIndex = self::stripBatchIndex($attribute);
+            $htmlOptions['value'] = $model->$attrWithoutIndex?
+                $model->$attrWithoutIndex:
+                $model->getAttributeDefault($attrWithoutIndex);
+
+            $htmlOptions['default'] = $model->getAttributeDefault($attrWithoutIndex);
+        }
+        return parent::activeTextField($model,$attribute,$htmlOptions);
+    }
+
+    public static function activeTextArea($model,$attribute,$htmlOptions=array())
+    {
+        if ($htmlOptions['default'])
+        {
+        	$attrWithoutIndex = self::stripBatchIndex($attribute);
+	        if (isset($htmlOptions['value']))
+	        {
+	            $model->$attrWithoutIndex = $htmlOptions['value'];
+	            unset($htmlOptions['value']);
+	        }
+	        elseif (!$model->$attrWithoutIndex)
+	        {
+	            $model->$attrWithoutIndex = $model->getAttributeDefault($attrWithoutIndex);
+	        }
+	        $htmlOptions['default'] = $model->getAttributeDefault($attrWithoutIndex);
+        }
+
+        return parent::activeTextArea($model,$attribute,$htmlOptions);
+    }
+
     public static function activeStampField($model,$attribute,$htmlOptions=array())
     {
         $attrWithoutIndex = self::stripBatchIndex($attribute);
         if (!isset($htmlOptions['value']))
             $htmlOptions['value'] = $model->$attrWithoutIndex?
                 strftime('%Y-%m-%d',$model->$attrWithoutIndex):
-                $model->getAttributeDefault($attrWithoutIndex);
+                ($htmlOptions['default']=$model->getAttributeDefault($attrWithoutIndex));
         return parent::activeTextField($model,$attribute,$htmlOptions);
     }
 
