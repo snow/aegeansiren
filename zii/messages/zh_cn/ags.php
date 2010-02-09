@@ -29,6 +29,7 @@ return array(
     'thx4feedback'=>'感谢您的反馈！',
     'resentActivateMail'=>'包含激活链接的邮件已经发送到你邮箱。如果没有找到，不妨检查一下垃圾邮件。',
     'forgotPassword'=>'忘了密码？',
+    'resetPassword'=>'重设密码',
     'recoverPassword:mail:subject'=>'{name}，您的重设密码邮件',
     'recoverPassword:mail:body'=>'{name}，别着急，我们来救你了~<br />点击下面的链接<p><a href="{link}">{link}</a></p>或者把链接复制到浏览器的地址栏然后回车。',
     'closeWindow'=>'关闭本窗口',
