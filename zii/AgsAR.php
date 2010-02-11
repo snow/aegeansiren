@@ -60,18 +60,18 @@ abstract class AgsAR extends CActiveRecord
 
     public function getAttributeLabel($attribute)
     {
-        $value = Y::t('local',get_class($this).':'.$attribute.':label');
+        $label = Y::t('local',get_class($this).':'.$attribute.':label');
 
-        if (get_class($this).':'.$attribute.':label' == $value)
+        if (get_class($this).':'.$attribute.':label' == $label)
         {
-            $value = Y::t('local',get_class($this).':'.$attribute);
+            $label = Y::t('local',get_class($this).':'.$attribute);
         }
 
-        if ('none' === $value)
+        if ('none' === $label)
         {
-            $value = '';
+            $label = '';
         }
-        return $value;
+        return $label;
     }
 
     protected function beforeSave()
