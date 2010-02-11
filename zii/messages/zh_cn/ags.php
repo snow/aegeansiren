@@ -35,6 +35,13 @@ return array(
     'closeWindow'=>'关闭本窗口',
     'sad'=>'/. .\\',
     'happy'=>'\(^__^)/',
+    /*
+     * pager
+     */
+    'pager:next'=>'下一页',
+    'pager:previous'=>'上一页',
+    'pager:first'=>'第一页',
+    'pager:last'=>'最后一页',
     /**
      * error
      */
