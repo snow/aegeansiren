@@ -20,7 +20,7 @@ class AgsNameToIdValidator extends CValidator
 
         if (is_array($object->$attribute))
         {
-            $attrNames = AgsSeraph::getSingleForm($attribute).'Names';
+            $attrNames = S::getSingleForm($attribute).'Names';
             if (isset($object->$attrNames))
             {
                 $object->$attrNames = $object->$attribute;
