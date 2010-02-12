@@ -9,7 +9,7 @@ abstract class AgsMTISupport extends AgsAR
     protected $_superInst;
     protected $_superAttrs = array();
 
-    protected function getSuperClass();
+    abstract protected function getSuperClass();
 
     protected function isSupperAttr($attribute)
     {
