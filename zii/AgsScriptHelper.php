@@ -350,6 +350,22 @@ class AgsScriptHelper extends CComponent
             switch (substr($rule,0,1))
             {
                 case '-':
+                    /* enable when ie is not treated specially or is ie */
+                    /* this is not a valid css hack */
+                    if ('t-' === substr($rule,1,2))
+                    {
+                        if ((('default' === $this->detectBrowserType($clientFile))
+                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['trident'])
+                                    || in_array('trident',$this->cssMap[$clientFile]['specialBrowsers']))) )
+                            || ('trident' === $this->_browserEngine))
+                        {
+                            return trim(substr($rule,3));
+                        }
+                        else
+                        {
+                            return '';
+                        }
+                    }
                     /* enable when ie8 is not treated specially or is ie8 */
                 	/* this is not a valid css hack */
                     if ('t8-' === substr($rule,1,3))
