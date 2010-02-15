@@ -284,7 +284,7 @@ class AgsScriptHelper extends CComponent
             $propertities = explode(';',$propertyTmp);
             foreach ($propertities as $propertyStr)
             {
-                list($property,$value) = explode(':',$propertyStr);
+                list($property,$value) = explode(':',$propertyStr,2);
                 /* if it is not a property or not use for current user agent,ignore it */
                 if ('' === ($property = $this->browserCssHackFilter(
                     preg_replace('/[\s\n\r]+/','',$property),$clientFile,true)
