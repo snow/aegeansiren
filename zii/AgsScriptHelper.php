@@ -153,7 +153,7 @@ class AgsScriptHelper extends CComponent
     {
         if (!$this->_cssClientFiles[$clientFile])
         {
-            $this->_cssClientFiles[$clientFile] = $clientFile.'-'.$this->detectBrowserType($clientFile);
+            $this->_cssClientFiles[$clientFile] = $clientFile.'-'.$this->determineSpecialCssType($clientFile);
             if (YII_DEBUG)
             {
                 /*
@@ -187,7 +187,7 @@ class AgsScriptHelper extends CComponent
      *
      * @param string $clientFile
      */
-    protected function detectBrowserType($clientFile)
+    public function determineSpecialCssType($clientFile)
     {
         /*
          * match something like 'specialBrowsers'=>array('trident','Opera')
@@ -250,6 +250,17 @@ class AgsScriptHelper extends CComponent
             return 'default';
         }
     }
+
+    public function getBrowserEngine()
+    {
+    	return $this->_browserEngine;
+    }
+
+    public function getBrowserMajorVer()
+    {
+    	return $this->_browserMVer;
+    }
+
     /**
      * generate a client css file that fit current browser
      *
@@ -354,7 +365,7 @@ class AgsScriptHelper extends CComponent
                     /* this is not a valid css hack */
                     if ('t-' === substr($rule,1,2))
                     {
-                        if ((('default' === $this->detectBrowserType($clientFile))
+                        if ((('default' === $this->determineSpecialCssType($clientFile))
                                 && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['trident'])
                                     || in_array('trident',$this->cssMap[$clientFile]['specialBrowsers']))) )
                             || ('trident' === $this->_browserEngine))
@@ -370,7 +381,7 @@ class AgsScriptHelper extends CComponent
                 	/* this is not a valid css hack */
                     if ('t8-' === substr($rule,1,3))
                     {
-                        if ((('default' === $this->detectBrowserType($clientFile))
+                        if ((('default' === $this->determineSpecialCssType($clientFile))
                                 && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['trident'])
                                     || in_array(8,$this->cssMap[$clientFile]['specialBrowsers']['trident']))) )
                             || (('trident' === $this->_browserEngine) && (8 === $this->_browserMVer)))
@@ -385,7 +396,7 @@ class AgsScriptHelper extends CComponent
                     /* enable when gecko is not treated specially or is gecko */
                     if ('moz-' === substr($rule,1,4))
                     {
-                        if ((('default' === $this->detectBrowserType($clientFile))
+                        if ((('default' === $this->determineSpecialCssType($clientFile))
                                 && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['gecko'])
                                     || in_array('gecko',$this->cssMap[$clientFile]['specialBrowsers']))) )
                             || ('gecko' === $this->_browserEngine))
@@ -400,7 +411,7 @@ class AgsScriptHelper extends CComponent
                     /* enable when webkit is not treated speacilly or is webkit */
                     if ('webkit-' === substr($rule,1,7))
                     {
-                        if ((('default' === $this->detectBrowserType($clientFile))
+                        if ((('default' === $this->determineSpecialCssType($clientFile))
                                 && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['webkit'])
                                     || in_array('webkit',$this->cssMap[$clientFile]['specialBrowsers']))))
                             || ('webkit' === $this->_browserEngine))
@@ -415,7 +426,7 @@ class AgsScriptHelper extends CComponent
                     /* enable when khtml is not treated speacilly or is khtml */
                     if ('khtml-' === substr($rule,1,6))
                     {
-                        if ((('default' === $this->detectBrowserType($clientFile))
+                        if ((('default' === $this->determineSpecialCssType($clientFile))
                                 && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['khtml'])
                                     || in_array('khtml',$this->cssMap[$clientFile]['specialBrowsers']))))
                             || ('khtml' === $this->_browserEngine))
