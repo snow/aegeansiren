@@ -137,6 +137,25 @@ class AgsHtml extends CHtml
         return '<div class="s-c"></div>';
     }
 
+    public static function qqLink($qq,$htmlOptions=array())
+    {
+    	$htmlOptions['class'] .= 's-chLn s-chLnQ';
+    	return self::link(self::image('http://wpa.qq.com/pa?p=1:'.$qq.':41','通过QQ与Ta交谈').$qq,
+    	   'Tencent://Message/?Uin='.$qq.'&websiteName=校园招聘',$htmlOptions);
+    }
+
+    public static function gtalkLink($gtalk,$htmlOptions=array())
+    {
+    	$htmlOptions['class'] .= 's-chLn s-chLnGTalk';
+    	return self::link($gtalk,'gtalk:chat?jid='.$gtalk,$htmlOptions);
+    }
+
+    public static function msnLink($msn,$htmlOptions=array())
+    {
+        $htmlOptions['class'] .= 's-chLn s-chLnMsn';
+    	return self::link($msn,'msnim:chat?contact='.$msn,$htmlOptions);
+    }
+
     protected static function stripBatchIndex($attribute)
     {
         return preg_replace('/\[\d+\]/','',$attribute);
