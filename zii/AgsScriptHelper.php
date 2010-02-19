@@ -192,7 +192,8 @@ class AgsScriptHelper extends CComponent
         /*
          * match something like 'specialBrowsers'=>array('trident','Opera')
          */
-        if (in_array($this->_browserEngine,$this->cssMap[$clientFile]['specialBrowsers']))
+        if (is_array($this->cssMap[$clientFile]['specialBrowsers'])
+            && in_array($this->_browserEngine,$this->cssMap[$clientFile]['specialBrowsers']))
         {
             return $this->_browserEngine;
         }
@@ -365,10 +366,7 @@ class AgsScriptHelper extends CComponent
                     /* this is not a valid css hack */
                     if ('t-' === substr($rule,1,2))
                     {
-                        if ((('default' === $this->determineSpecialCssType($clientFile))
-                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['trident'])
-                                    || in_array('trident',$this->cssMap[$clientFile]['specialBrowsers']))) )
-                            || ('trident' === $this->_browserEngine))
+                        if ($this->shouldEnableOnBrowser($clientFile,'trident'))
                         {
                             return trim(substr($rule,3));
                         }
@@ -381,10 +379,7 @@ class AgsScriptHelper extends CComponent
                 	/* this is not a valid css hack */
                     if ('t8-' === substr($rule,1,3))
                     {
-                        if ((('default' === $this->determineSpecialCssType($clientFile))
-                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['trident'])
-                                    || in_array(8,$this->cssMap[$clientFile]['specialBrowsers']['trident']))) )
-                            || (('trident' === $this->_browserEngine) && (8 === $this->_browserMVer)))
+                        if ($this->shouldEnableOnBrowser($clientFile,'trident',8))
                         {
                             return trim(substr($rule,4));
                         }
@@ -396,10 +391,7 @@ class AgsScriptHelper extends CComponent
                     /* enable when gecko is not treated specially or is gecko */
                     if ('moz-' === substr($rule,1,4))
                     {
-                        if ((('default' === $this->determineSpecialCssType($clientFile))
-                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['gecko'])
-                                    || in_array('gecko',$this->cssMap[$clientFile]['specialBrowsers']))) )
-                            || ('gecko' === $this->_browserEngine))
+                        if ($this->shouldEnableOnBrowser($clientFile,'gecko'))
                         {
                             return $rule;
                         }
@@ -411,10 +403,7 @@ class AgsScriptHelper extends CComponent
                     /* enable when webkit is not treated speacilly or is webkit */
                     if ('webkit-' === substr($rule,1,7))
                     {
-                        if ((('default' === $this->determineSpecialCssType($clientFile))
-                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['webkit'])
-                                    || in_array('webkit',$this->cssMap[$clientFile]['specialBrowsers']))))
-                            || ('webkit' === $this->_browserEngine))
+                        if ($this->shouldEnableOnBrowser($clientFile,'webkit'))
                         {
                             return $rule;
                         }
@@ -426,10 +415,7 @@ class AgsScriptHelper extends CComponent
                     /* enable when khtml is not treated speacilly or is khtml */
                     if ('khtml-' === substr($rule,1,6))
                     {
-                        if ((('default' === $this->determineSpecialCssType($clientFile))
-                                && (!(isset($this->cssMap[$clientFile]['specialBrowsers']['khtml'])
-                                    || in_array('khtml',$this->cssMap[$clientFile]['specialBrowsers']))))
-                            || ('khtml' === $this->_browserEngine))
+                        if ($this->shouldEnableOnBrowser($clientFile,'khtml'))
                         {
                             return $rule;
                         }
@@ -538,5 +524,26 @@ class AgsScriptHelper extends CComponent
          * normal rule,return it originly
          */
         return $rule;
+    }
+    /*
+     * detect if current browser specified in config
+     */
+    protected function shouldEnableOnBrowser($clientFile,$engine,$ver=null)
+    {
+        if ('default' === $this->determineSpecialCssType($clientFile))
+        {
+        	return is_array($this->cssMap[$clientFile]['specialBrowsers'])?
+        	   (!(isset($this->cssMap[$clientFile]['specialBrowsers'][$engine])
+        	       ||in_array($engine,$this->cssMap[$clientFile]['specialBrowsers'])))
+        	   :true;
+        }
+        elseif ($engine === $this->_browserEngine)
+        {
+        	return null===$ver?true:$ver===$this->_browserMVer;
+        }
+        else
+        {
+        	return false;
+        }
     }
 }
