@@ -21,6 +21,8 @@ return array(
     'logout'=>'注销',
     'save'=>'保存',
     'submit'=>'提交',
+    'publish'=>'发布',
+    'draft'=>'草稿',
     'cancel'=>'取消',
     'comingSoon'=>'<h1>Coming soon</h1>',
     'uncategorized'=>'未分类',
