@@ -305,7 +305,11 @@ class Browscap
 
 		$this->_getRemoteIniFile($url, $ini_path);
 
-		$browsers 			= parse_ini_file($ini_path, true);
+		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+			$browsers = parse_ini_file($ini_path, true, INI_SCANNER_RAW);
+		}else{
+			$browsers = parse_ini_file($ini_path, true);
+		}
 		array_shift($browsers);
 
 		$this->_properties	= array_keys($browsers['DefaultProperties']);
