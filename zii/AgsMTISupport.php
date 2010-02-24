@@ -6,135 +6,135 @@
  */
 abstract class AgsMTISupport extends AgsAR
 {
-    protected $_superInst;
-    protected $_superAttrs = array();
+	protected $_superInst;
+	protected $_superAttrs = array();
 
-    abstract protected function getSuperClass();
+	abstract protected function getSuperClass();
 
-    protected function isSupperAttr($attribute)
-    {
-        return 'id' != $attribute
-            && (in_array($attribute,$this->superInst->attributeNames)
-                || in_array($attribute,$this->_superAttrs));
-    }
+	protected function isSupperAttr($attribute)
+	{
+		return 'id' != $attribute
+			&& (in_array($attribute,$this->superInst->attributeNames)
+				|| in_array($attribute,$this->_superAttrs));
+	}
 
-    public function __get($name)
-    {
-        if ($this->isSupperAttr($name))
-        {
-            return $this->superInst->$name;
-        }
-        else
-        {
-            return parent::__get($name);
-        }
-    }
+	public function __get($name)
+	{
+		if ($this->isSupperAttr($name))
+		{
+			return $this->superInst->$name;
+		}
+		else
+		{
+			return parent::__get($name);
+		}
+	}
 
-    public function __set($name,$value)
-    {
-        if ($this->isSupperAttr($name))
-        {
-            return $this->superInst->$name = $value;
-        }
-        else
-        {
-            return parent::__set($name,$value);
-        }
-    }
+	public function __set($name,$value)
+	{
+		if ($this->isSupperAttr($name))
+		{
+			return $this->superInst->$name = $value;
+		}
+		else
+		{
+			return parent::__set($name,$value);
+		}
+	}
 
-    public function setScenario($value)
-    {
-        parent::setScenario($value);
+	public function setScenario($value)
+	{
+		parent::setScenario($value);
 
-        $this->superInst->scenario = $value;
-    }
+		$this->superInst->scenario = $value;
+	}
 
-    public function isAttributeRequired($attribute)
-    {
-        if ($this->isSupperAttr($attribute))
-        {
-            return $this->superInst->isAttributeRequired($attribute);
-        }
-        else
-        {
-            return parent::isAttributeRequired($attribute);
-        }
-    }
+	public function isAttributeRequired($attribute)
+	{
+		if ($this->isSupperAttr($attribute))
+		{
+			return $this->superInst->isAttributeRequired($attribute);
+		}
+		else
+		{
+			return parent::isAttributeRequired($attribute);
+		}
+	}
 
-    public function getSuperInst()
-    {
-        if (null === $this->_superInst)
-        {
-            $superClass = $this->superClass;
-            $this->_superInst = $this->isNewRecord?new $superClass()
-                :CActiveRecord::model($superClass)->findByAttributes();
-            if (null === $this->_superInst)
-            {
-                throw new CException('Cant find baseuser for '.get_class($this).'#'.$this->id);
-            }
-        }
-        return $this->_superInst;
-    }
+	public function getSuperInst()
+	{
+		if (null === $this->_superInst)
+		{
+			$superClass = $this->superClass;
+			$this->_superInst = $this->isNewRecord?new $superClass()
+				:CActiveRecord::model($superClass)->findByAttributes();
+			if (null === $this->_superInst)
+			{
+				throw new CException('Cant find baseuser for '.get_class($this).'#'.$this->id);
+			}
+		}
+		return $this->_superInst;
+	}
 
-    public function setAttributes($attributes,$safeOnly=true)
-    {
-        $attributes = parent::setAttributes($attributes,$safeOnly);
+	public function setAttributes($attributes,$safeOnly=true)
+	{
+		$attributes = parent::setAttributes($attributes,$safeOnly);
 
-        $this->superInst->attributes = $attributes;
+		$this->superInst->attributes = $attributes;
 
-        try {
-            $this->superInst->subtype = strtolower(get_class($this));
-        }
-        catch (Exception $e)
-        {
-            //nothing,just to avoid
-        }
-    }
+		try {
+			$this->superInst->subtype = strtolower(get_class($this));
+		}
+		catch (Exception $e)
+		{
+			//nothing,just to avoid
+		}
+	}
 
-    public function validate($attributes=null)
-    {
-        if (parent::validate($attributes))
-        {
-            if ($this->superInst->validate($attributes))
-            {
-                return true;
-            }
-            else
-            {
-                $this->addErrors($this->superInst->getErrors());
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
+	public function validate($attributes=null)
+	{
+		if (parent::validate($attributes))
+		{
+			if ($this->superInst->validate($attributes))
+			{
+				return true;
+			}
+			else
+			{
+				$this->addErrors($this->superInst->getErrors());
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
 
-    public function save($runValidation=true,$attributes=null)
-    {
-        $valid = $runValidation?$this->validate($attributes):true;
+	public function save($runValidation=true,$attributes=null)
+	{
+		$valid = $runValidation?$this->validate($attributes):true;
 
-        if ($valid)
-        {
-            if ($this->superInst->save(false,$attributes))
-            {
-                if ($this->isNewRecord)
-                {
-                    $this->id = $this->superInst->id;
-                }
+		if ($valid)
+		{
+			if ($this->superInst->save(false,$attributes))
+			{
+				if ($this->isNewRecord)
+				{
+					$this->id = $this->superInst->id;
+				}
 
-                return parent::save(false,$attributes);
-            }
-        }
+				return parent::save(false,$attributes);
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    public function delete()
-    {
-        parent::delete();
+	public function delete()
+	{
+		parent::delete();
 
-        $this->superInst->delete();
-    }
+		$this->superInst->delete();
+	}
 }
