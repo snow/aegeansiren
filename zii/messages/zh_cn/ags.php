@@ -61,6 +61,7 @@ return array(
 	'error:userNotFound'=>'{account}并没有注册',
 	'error:accountNotActivated'=>'帐号还未激活。',
 	'error:wrongPassword'=>'密码不正确',
+	'error:invalidParams'=>'提供了非法的参数',
 	/**
 	 * notification
 	 */
