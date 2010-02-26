@@ -56,8 +56,8 @@ return array(
 	 */
 	'error:notFound'=>'没找到"{entity}" :(',
 	'error:notNull'=>'{attribute}不能为空',
-	'error:tooShort'=>'{attribute}最短应为{min}个字符',
-	'error:tooLong'=>'{attribute}最短应为{max}个字符',
+	'error:tooShort'=>'{attribute}最短{min}个字符',
+	'error:tooLong'=>'{attribute}最长{max}个字符',
 	'error:notMatchFixedLength'=>'{attribute}应为{length}个字符',
 	'error:uniqueConflic'=>'{value}已经被占用了',
 	'error:userNotFound'=>'{account}并没有注册',
