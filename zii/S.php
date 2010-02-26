@@ -41,4 +41,9 @@ class S
 			.'@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/';
 		return preg_match($pattern,$string);
 	}
+
+	public static function getUrlDomain($url)
+	{
+		return is_string($url)?current(explode('/',array_pop(explode('//',$url,2)),2)):'';
+	}
 }

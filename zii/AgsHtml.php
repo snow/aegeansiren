@@ -165,6 +165,11 @@ class AgsHtml extends CHtml
 		return self::link($msn,'msnim:chat?contact='.$msn,$htmlOptions);
 	}
 
+	public static function getUrlFavicon($url)
+	{
+		return 'http://google.com/s2/favicons?domain='.S::getUrlDomain($url);
+	}
+
 	protected static function stripBatchIndex($attribute)
 	{
 		return preg_replace('/\[\d+\]/','',$attribute);
