@@ -22,7 +22,7 @@ return array(
 	'rejectServiceTermAndBackToIndex'=>'拒绝并返回首页',
 	'register'=>'注册',
 	'login'=>'登录',
-	'logout'=>'注销',
+	'logout'=>'退出',
 	'save'=>'保存',
 	'submit'=>'提交',
 	'publish'=>'发布',
