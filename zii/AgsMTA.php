@@ -84,6 +84,7 @@ class AgsMTA extends CComponent
 		$mailer->Host = $this->host;
 		$mailer->Username = $this->user;
 		$mailer->Password = $this->password;
+		$mailer->SetFrom(Y::a()->params['sysmailAddr'],Y::a()->params['sysmailName']);
 		$mailer->IsHTML(true);
 		$mailer->CharSet = 'utf-8';
 
