@@ -4,7 +4,10 @@ class AgsMTA extends CComponent
 {
 	public $host,$user,$password;
 
-	public function init() {}
+	public function init()
+	{
+		require_once dirname(__FILE__).'/class.phpmailer.php';
+	}
 
 	/**
 	 * @param $params associate array of params listed below
@@ -16,8 +19,6 @@ class AgsMTA extends CComponent
 	 */
 	public function send($params = array())
 	{
-		require_once 'class.phpmailer.php';
-
 		$params = array_merge(array(
 			'to'=>array(),
 			'cc'=>array(),
@@ -72,5 +73,20 @@ class AgsMTA extends CComponent
 		$mailer->Body = $params['body'];
 
 		return $mailer->Send();
+	}
+
+	public function getMailer()
+	{
+		$mailer = new PHPMailer;
+
+		$mailer->IsSMTP();
+		$mailer->SMTPAuth = true;
+		$mailer->Host = $this->host;
+		$mailer->Username = $this->user;
+		$mailer->Password = $this->password;
+		$mailer->IsHTML(true);
+		$mailer->CharSet = 'utf-8';
+
+		return $mailer;
 	}
 }
