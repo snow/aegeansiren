@@ -328,8 +328,9 @@ class AgsScriptHelper extends CComponent
 		}
 		/**
 		 * remove all version of a generated client css file
+		 * if YII_DEBUG is on,strip the timestamp from filename pattern to match all old files
 		 */
-		$filenamePattern = preg_replace('/\-\d+\.css/','',$this->getCssFileName($clientFile));
+		$filenamePattern = preg_replace((YII_DEBUG?'/\-\d+':'/').'.css/','',$this->getCssFileName($clientFile));
 		if ($dir = opendir($this->_cssPath))
 		{
 			while ($file = readdir($dir))
