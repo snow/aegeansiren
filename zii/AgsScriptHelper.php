@@ -51,8 +51,6 @@ class AgsScriptHelper extends CComponent
 
 	public function init()
 	{
-		$bc = new Browscap('/tmp');
-		$this->_browser = $bc->getBrowser();
 		$this->detectBrowserEngineAndVer();
 		$this->_cssPath = Yii::getPathOfAlias($this->cssPathAlias);
 		if (!is_array($this->cssMap))
@@ -118,6 +116,14 @@ class AgsScriptHelper extends CComponent
 	 */
 	protected function detectBrowserEngineAndVer()
 	{
+		if ($this->_browserEngine=Y::u()->getState('AgsBrowser')
+			&& $this->_browserMVer=Y::u()->getState('AgsBrowserVer'))
+		{
+			return;
+		}
+
+		$bc = new Browscap('/tmp');
+		$this->_browser = $bc->getBrowser();
 		$this->_browserMVer = (int)$this->_browser->MajorVer;
 		/* all IE.I'm not sure if IE9 will have new engine */
 		if ('IE' === $this->_browser->Browser && $this->_browserMVer < 9)
@@ -143,6 +149,14 @@ class AgsScriptHelper extends CComponent
 		{
 			$this->_browserEngine = strtolower($this->_browser->Browser);
 		}
+
+		$this->cacheBrowser($this->_browserEngine,$this->_browserMVer);
+	}
+
+	public function cacheBrowser($engine,$ver)
+	{
+		Y::u()->setState('AgsBrowser',$engine);
+		Y::u()->setState('AgsBrowserVer',$ver);
 	}
 	/**
 	 * compute filename of a client css
