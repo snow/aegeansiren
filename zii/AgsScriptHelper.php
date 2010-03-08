@@ -116,8 +116,8 @@ class AgsScriptHelper extends CComponent
 	 */
 	protected function detectBrowserEngineAndVer()
 	{
-		if ($this->_browserEngine=Y::u()->getState('AgsBrowser')
-			&& $this->_browserMVer=Y::u()->getState('AgsBrowserVer'))
+		if (($this->_browserEngine=Y::u()->getState('AgsBrowser'))
+			&& ($this->_browserMVer=Y::u()->getState('AgsBrowserVer')))
 		{
 			return;
 		}
