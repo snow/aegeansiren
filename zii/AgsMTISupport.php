@@ -13,9 +13,9 @@ abstract class AgsMTISupport extends AgsAR
 
 	protected function isSupperAttr($attribute)
 	{
-		return 'id' != $attribute
-			&& (in_array($attribute,$this->superInst->attributeNames)
-				|| in_array($attribute,$this->_superAttrs));
+		return ('id' != $attribute)
+			&& (in_array($attribute,$this->_superAttrs)
+				|| in_array($attribute,$this->superInst->attributeNames));
 	}
 
 	public function __get($name)
