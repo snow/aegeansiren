@@ -14,13 +14,14 @@ abstract class AgsMTISupport extends AgsAR
 
 	protected function isSupperAttr($attribute)
 	{
-		return in_array($attribute,$this->_superAttrs)
-				|| in_array($attribute,$this->superInst->attributeNames());
+		return !in_array($attribute,$this->_specialAttrs) &&
+			(in_array($attribute,$this->_superAttrs)
+				|| in_array($attribute,$this->superInst->attributeNames()));
 	}
 
 	public function __get($name)
 	{
-		if (!in_array($name,$this->_specialAttrs) && $this->isSupperAttr($name))
+		if ($this->isSupperAttr($name))
 		{
 			return $this->superInst->$name;
 		}
@@ -32,7 +33,7 @@ abstract class AgsMTISupport extends AgsAR
 
 	public function __set($name,$value)
 	{
-		if (!in_array($name,$this->_specialAttrs) && $this->isSupperAttr($name))
+		if ($this->isSupperAttr($name))
 		{
 			return $this->superInst->$name = $value;
 		}
