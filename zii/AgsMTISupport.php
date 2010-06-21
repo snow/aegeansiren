@@ -7,16 +7,17 @@
 abstract class AgsMTISupport extends AgsAR
 {
 	protected $_superInst;
-	protected $_superAttrs = array();
-	protected $_specialAttrs = array('superInst','superClass','isNewRecord','id');
+	protected $_superClass;
+	protected static $_specialAttrs = array('superInst','superClass','isNewRecord','id');
+	protected static $_superAttrs = array();
 
 	abstract protected function getSuperClass();
 
 	protected function isSupperAttr($attribute)
 	{
-		return !in_array($attribute,$this->_specialAttrs) &&
-			(in_array($attribute,$this->_superAttrs)
-				|| in_array($attribute,$this->superInst->attributeNames()));
+		return (!in_array($attribute,self::$_specialAttrs)) &&
+			(in_array($attribute,self::$_superAttrs)
+				|| in_array($attribute,CActiveRecord::model($this->superClass)->attributeNames()));
 	}
 
 	public function __get($name)
@@ -64,13 +65,16 @@ abstract class AgsMTISupport extends AgsAR
 
 	public function getSuperInst()
 	{
-		if (null === $this->_superInst)
+		if (null === $this->_superClass)
 		{
-			$superClass = $this->superClass;
+			$this->_superClass = $this->getSuperClass();
+		}
 
+		if (($this->_superClass !== get_class($this->_superInst)) || (('insert' !== $this->scenario) && (!$this->_superInst->id)))
+		{
 			$this->_superInst = $this->id?
-				CActiveRecord::model($superClass)->findByAttributes(array('id'=>$this->id))
-				:new $superClass();
+				CActiveRecord::model($this->_superClass)->findByAttributes(array('id'=>(int)$this->id))
+				:new $this->_superClass();
 			if (null === $this->_superInst)
 			{
 				throw new CException('Cant find base for '.get_class($this).'#'.$this->id);
