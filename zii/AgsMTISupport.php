@@ -8,19 +8,19 @@ abstract class AgsMTISupport extends AgsAR
 {
 	protected $_superInst;
 	protected $_superAttrs = array();
+	protected $_specialAttrs = array('superInst','superClass','isNewRecord','id');
 
 	abstract protected function getSuperClass();
 
 	protected function isSupperAttr($attribute)
 	{
-		return ('id' != $attribute)
-			&& (in_array($attribute,$this->_superAttrs)
-				|| in_array($attribute,$this->superInst->attributeNames));
+		return in_array($attribute,$this->_superAttrs)
+				|| in_array($attribute,$this->superInst->attributeNames());
 	}
 
 	public function __get($name)
 	{
-		if ($this->isSupperAttr($name))
+		if (!in_array($name,$this->_specialAttrs) && $this->isSupperAttr($name))
 		{
 			return $this->superInst->$name;
 		}
@@ -32,7 +32,7 @@ abstract class AgsMTISupport extends AgsAR
 
 	public function __set($name,$value)
 	{
-		if ($this->isSupperAttr($name))
+		if (!in_array($name,$this->_specialAttrs) && $this->isSupperAttr($name))
 		{
 			return $this->superInst->$name = $value;
 		}
@@ -66,11 +66,13 @@ abstract class AgsMTISupport extends AgsAR
 		if (null === $this->_superInst)
 		{
 			$superClass = $this->superClass;
-			$this->_superInst = $this->isNewRecord?new $superClass()
-				:CActiveRecord::model($superClass)->findByAttributes();
+
+			$this->_superInst = $this->id?
+				CActiveRecord::model($superClass)->findByAttributes(array('id'=>$this->id))
+				:new $superClass();
 			if (null === $this->_superInst)
 			{
-				throw new CException('Cant find baseuser for '.get_class($this).'#'.$this->id);
+				throw new CException('Cant find base for '.get_class($this).'#'.$this->id);
 			}
 		}
 		return $this->_superInst;
