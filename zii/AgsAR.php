@@ -74,7 +74,7 @@ abstract class AgsAR extends CActiveRecord
 		return $label;
 	}
 
-	protected function beforeSave()
+	protected function beforeValidate()
 	{
 		$time = time();
 		if ( $this->hasAttribute('created') && $this->isNewRecord)
@@ -83,7 +83,7 @@ abstract class AgsAR extends CActiveRecord
 		if ( $this->hasAttribute('updated') )
 			$this->updated = $time;
 
-		return parent::beforeSave();
+		return parent::beforeValidate();
 	}
 
 	public function setAttributes($values,$safeOnly=true)
