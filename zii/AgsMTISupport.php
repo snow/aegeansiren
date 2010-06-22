@@ -8,15 +8,16 @@ abstract class AgsMTISupport extends AgsAR
 {
 	protected $_superInst;
 	protected $_superClass;
-	protected static $_specialAttrs = array('superInst','superClass','isNewRecord','id');
-	protected static $_superAttrs = array();
+	protected static $_specialAttrs = array('superInst','superClass','superAttrs','isNewRecord','id');
+
+	abstract protected function getSuperAttrs();
 
 	abstract protected function getSuperClass();
 
 	protected function isSupperAttr($attribute)
 	{
 		return (!in_array($attribute,self::$_specialAttrs)) &&
-			(in_array($attribute,self::$_superAttrs)
+			(in_array($attribute,$this->superAttrs)
 				|| in_array($attribute,CActiveRecord::model($this->superClass)->attributeNames()));
 	}
 
