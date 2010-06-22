@@ -33,6 +33,7 @@ return array(
 	'cancel'=>'取消',
 	'comingSoon'=>'<h1>Coming soon</h1>',
 	'uncategorized'=>'未分类',
+	'more'=>'更多',
 	'longDate'=>'{year}年{month}月{day}日',
 	'shortDate'=>'{month}月{day}日',
 	'done'=>'\(^__^)/ 搞定了',
