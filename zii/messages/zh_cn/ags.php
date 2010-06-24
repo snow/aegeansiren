@@ -77,6 +77,7 @@ return array(
 	'error:wrongPassword'=>'密码不正确',
 	'error:invalidParams'=>'提供了非法的参数 {function}',
 	'error:internal'=>'/. .\ 遇到了一些小麻烦，再试一次看看有没有好运气？',
+	'error:mkdirFail'=>'创建目录失败',
 	/**
 	 * notification
 	 */
