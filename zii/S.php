@@ -92,4 +92,32 @@ class S
 			  break;
 		}
 	}
+
+	public static function delDir($dir)
+	{
+		if (substr($dir, strlen($dir)-1, 1) != '/') $dir .= '/';
+
+		if ($handle = opendir($dir))
+		{
+			while ($obj = readdir($handle))
+			{
+				if ($obj != '.' && $obj != '..')
+				{
+					if (is_dir($dir.$obj))
+					{
+						if (!self::delDir($dir.$obj)) return false;
+					}
+					elseif (is_file($dir.$obj))
+					{
+						if (!unlink($dir.$obj)) return false;
+					}
+				}
+			}
+
+			closedir($handle);
+
+			return @rmdir($dir);
+		}
+		return false;
+	}
 }
