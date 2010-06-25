@@ -66,18 +66,18 @@ return array(
 	/**
 	 * error
 	 */
-	'error:notFound'=>'没找到"{entity}" :(',
-	'error:notNull'=>'{attribute}不能为空',
-	'error:tooShort'=>'{attribute}最短{min}个字符',
-	'error:tooLong'=>'{attribute}最长{max}个字符',
-	'error:notMatchFixedLength'=>'{attribute}应为{length}个字符',
-	'error:uniqueConflic'=>'{value}已经被占用了',
-	'error:userNotFound'=>'{account}并没有注册',
-	'error:accountNotActivated'=>'帐号还未激活。',
-	'error:wrongPassword'=>'密码不正确',
-	'error:invalidParams'=>'提供了非法的参数 {function}',
-	'error:internal'=>'/. .\ 遇到了一些小麻烦，再试一次看看有没有好运气？',
-	'error:mkdirFail'=>'创建目录失败',
+	'err:notFound'=>'没找到"{entity}" :(',
+	'err:notNull'=>'{attribute}不能为空',
+	'err:tooShort'=>'{attribute}最短{min}个字符',
+	'err:tooLong'=>'{attribute}最长{max}个字符',
+	'err:notMatchFixedLength'=>'{attribute}应为{length}个字符',
+	'err:uniqueConflic'=>'{value}已经被占用了',
+	'err:userNotFound'=>'{account}并没有注册',
+	'err:accountNotActivated'=>'帐号还未激活。',
+	'err:wrongPassword'=>'密码不正确',
+	'err:invalidParams'=>'提供了非法的参数 {where}',
+	'err:internal'=>'/. .\ 遇到了一些小麻烦，再试一次看看有没有好运气？',
+	'err:mkdirFail'=>'创建目录失败',
 	/**
 	 * notification
 	 */
