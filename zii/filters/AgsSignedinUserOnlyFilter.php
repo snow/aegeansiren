@@ -1,5 +1,5 @@
 <?php
-class AgsSingedinUserOnlyFilter extends CFilter
+class AgsSignedinUserOnlyFilter extends CFilter
 {
 	protected function preFilter($filterChain)
 	{
