@@ -63,6 +63,12 @@ return array(
 	'pager:previous'=>'上一页',
 	'pager:first'=>'第一页',
 	'pager:last'=>'最后一页',
+	/*
+	 * User
+	 */
+	'User:signup'=>'注册',
+	'User:signin'=>'登录',
+	'User:signout'=>'退出',
 	/**
 	 * error
 	 */
