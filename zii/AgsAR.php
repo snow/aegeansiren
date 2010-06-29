@@ -37,32 +37,12 @@ abstract class AgsAR extends CActiveRecord
 		}
 	}
 
-	public function getAttributeDefault($attribute)
-	{
-		$value = Y::t('local',get_class($this).':'.$attribute.':default');
-
-		if (get_class($this).':'.$attribute.':default' === $value)
-		{
-			$value = Y::t('local',get_class($this).':'.$attribute);
-
-			if (get_class($this).':'.$attribute === $value)
-			{
-				$value = '';
-			}
-		}
-
-		if ('none' === $value)
-		{
-			$value = '';
-		}
-		return $value;
-	}
-
 	public function getAttributeLabel($attribute)
 	{
-		$label = Y::t('local',get_class($this).':'.$attribute.':label');
+		$messageKey = get_class($this).':'.$attribute.':label';
+		$label = Y::t('local',$messageKey);
 
-		if (get_class($this).':'.$attribute.':label' == $label)
+		if ($messageKey == $label)
 		{
 			$label = Y::t('local',get_class($this).':'.$attribute);
 		}
@@ -84,19 +64,6 @@ abstract class AgsAR extends CActiveRecord
 			$this->updated = $time;
 
 		return parent::beforeValidate();
-	}
-
-	public function setAttributes($values,$safeOnly=true)
-	{
-		foreach ($values as $k => $v)
-		{
-			if ($v === $this->getAttributeDefault($k))
-			{
-				unset($values[$k]);
-			}
-		}
-		parent::setAttributes($values,$safeOnly);
-		return $values;
 	}
 
 	public function searchWithPKQuery($query,$params,$or=false)
