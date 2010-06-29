@@ -8,7 +8,7 @@ class S
 	{
 		echo '<pre>';
 		var_dump($var);
-		echo '</pre>';exit;
+		die('</pre>');
 	}
 
 	public static function getMultiform($word)
