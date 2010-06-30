@@ -71,7 +71,7 @@ abstract class AgsMTISupport extends AgsAR
 			$this->_superClass = $this->getSuperClass();
 		}
 
-		if (($this->_superClass !== get_class($this->_superInst)) || (('insert' !== $this->scenario) && (!$this->_superInst->id)))
+		if (($this->_superClass !== get_class($this->_superInst)) || (('insert' !== $this->scenario) && ($this->id !== $this->_superInst->id)))
 		{
 			$this->_superInst = $this->id?
 				CActiveRecord::model($this->_superClass)->findByAttributes(array('id'=>(int)$this->id))
@@ -86,7 +86,7 @@ abstract class AgsMTISupport extends AgsAR
 
 	public function setAttributes($attributes,$safeOnly=true)
 	{
-		$attributes = parent::setAttributes($attributes,$safeOnly);
+		parent::setAttributes($attributes,$safeOnly);
 
 		$this->superInst->attributes = $attributes;
 
