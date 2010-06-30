@@ -28,6 +28,7 @@ return array(
 	'signout'=>'退出',
 	'save'=>'保存',
 	'submit'=>'提交',
+	'post'=>'发表',
 	'publish'=>'发布',
 	'add'=>'添加',
 	'upload'=>'上传',
