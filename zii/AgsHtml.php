@@ -60,43 +60,23 @@ class AgsHtml extends CHtml
 		return parent::activeTextField($model,$attribute,$htmlOptions);
 	}
 
-	public static function yearOfStamp($timestamp)
-	{
-		return strftime('%Y',$timestamp);
-	}
-
-	public static function monthOfStamp($timestamp)
-	{
-		return preg_replace('/^0/','',strftime('%m',$timestamp));
-	}
-
-	public static function dayOfStamp($timestamp)
-	{
-		return strftime('%e',$timestamp);
-	}
-
 	public static function longDate($timestamp)
 	{
 		return Y::t('ags','longDate',array(
-			'{year}'=>self::yearOfStamp($timestamp),
-			'{month}'=>self::monthOfStamp($timestamp),
-			'{day}'=>self::dayOfStamp($timestamp),
+			'{year}'=>date('Y',$timestamp),
+			'{month}'=>date('m',$timestamp),
+			'{day}'=>date('d',$timestamp),
 		));
 	}
 
 	public static function shortDate($timestamp)
 	{
-		return (self::yearOfStamp($timestamp) == self::yearOfStamp(time()))?
+		return (date('Y',$timestamp) === date('Y'))?
 			Y::t('ags','shortDate',array(
-				'{month}'=>self::monthOfStamp($timestamp),
-				'{day}'=>self::dayOfStamp($timestamp),
+				'{month}'=>date('m',$timestamp),
+				'{day}'=>date('d',$timestamp),
 			)):
 			self::longDate($timestamp);
-	}
-
-	public static function shortDateWitHHMM($timestamp)
-	{
-		return self::shortDate($timestamp).' '.strftime('%R',$timestamp);
 	}
 
 	public static function errorSummary($model,$htmlOptions=array(),$header='',$footer='')

@@ -56,12 +56,15 @@ abstract class AgsAR extends CActiveRecord
 
 	protected function beforeValidate()
 	{
-		$time = time();
-		if ( $this->hasAttribute('created') && $this->isNewRecord)
-			$this->created = $time;
+		if (in_array($this->scenario,array('insert','update')))
+		{
+			$time = time();
+			if ( $this->hasAttribute('created') && $this->isNewRecord)
+				$this->created = $time;
 
-		if ( $this->hasAttribute('updated') )
-			$this->updated = $time;
+			if ( $this->hasAttribute('updated') )
+				$this->updated = $time;
+		}
 
 		return parent::beforeValidate();
 	}
