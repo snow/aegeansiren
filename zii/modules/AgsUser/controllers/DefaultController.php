@@ -6,6 +6,9 @@ class DefaultController extends Controller
 	 * @var CActiveRecord the currently loaded data model instance.
 	 */
 	private $_model;
+	public $requireActivate;
+	public $defaultAccessLv;
+	public $subtypesOnlyActivateByAdmin;
 
 	/**
      * @return array action filters
@@ -21,14 +24,24 @@ class DefaultController extends Controller
 	 */
 	public function actionSignup()
 	{
-		/*$model=new AgsUser;
+		$model=new AgsUser;
 		if(isset($_POST['AgsUser']))
 		{
 			$model->attributes=$_POST['AgsUser'];
+			$model->subtype = 'user';
+			$model->accessId = $this->defaultAccessLv;
+			$model->status = $this->requireActivate?'pending':'active';
+			$model->enabled = true;
+			
 			if($model->save())
 			{
-                $this->sendActivateMail($model);
-                $this->pageTitle=Y::t('local','User:reg:done');
+                if ($this->requireActivate
+                	&& (!in_array($model->subtype,$this->subtypesOnlyActivateByAdmin))) 
+                {
+                	$this->sendActivateMail($model);
+                }
+				
+                /*$this->pageTitle=Y::t('local','User:reg:done');
                 $this->render(
                     array(
                         'main'=>array(
@@ -44,11 +57,11 @@ class DefaultController extends Controller
                         'layout'=>'m0',
                     )
                 );
-                return;
+                return;*/
 			}
 		}
 
-		$this->render(
+		/*$this->render(
             array(
                 'main'=>array(
                     'view'=>'register',

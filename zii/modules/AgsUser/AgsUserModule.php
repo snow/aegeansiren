@@ -2,6 +2,10 @@
 
 class AgsUserModule extends CWebModule
 {
+	public $requireActivate = true;
+	public $defaultAccessLv = Y::ACCESS_SIGNEDIN_USERS;
+	public $subtypesOnlyActivateByAdmin = array('admin');
+
 	public function init()
 	{
 		// this method is called when the module is being created
@@ -20,6 +24,13 @@ class AgsUserModule extends CWebModule
 		{
 			// this method is called before any module controller action is performed
 			// you may place customized code here
+			if (isset($controller->requireActivate))
+			{
+				$controller->requireActivate = $this->requireActivate;
+				$controller->defaultAccessLv = $this->defaultAccessLv;
+				$controler->subtypesOnlyActivateByAdmin = $this->subtypesOnlyActivateByAdmin;
+			}
+
 			return true;
 		}
 		else

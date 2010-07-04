@@ -4,6 +4,14 @@
  */
 class Y
 {
+	const ACCESS_ONLY_SELF = 0;
+	const ACCESS_ASSIGNED_USERS = 10;
+	const ACCESS_ASSIGNED_GROUPS = 20;
+	const ACCESS_ASSIGNED_ROLES = 30;
+	const ACCESS_ONLY_FRIEND = 40;
+	const ACCESS_SIGNEDIN_USERS = 100;
+	const ACCESS_PUBLIC = 200;
+	
 	public static function t($category,$message,$params=array(),$source=null,$language=null)
 	{
 		return Yii::t($category,$message,$params,$source,$language);
