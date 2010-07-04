@@ -6,24 +6,65 @@
  */
 abstract class AgsMTISupport extends AgsAR
 {
-	protected $_superInst;
-	protected $_superClass;
-	protected static $_specialAttrs = array('superInst','superClass','superAttrs','isNewRecord','id');
-
-	abstract protected function getSuperAttrs();
+	private $_superModel;
+	private $_superAttrs;
+	private $_superInst;
+	protected static $_notSuperAttrs = array('isNewRecord','id');
 
 	abstract protected function getSuperClass();
 
+	protected function getSuperModel()
+	{
+		if (null === $this->_superModel)
+		{
+			$this->_superModel = CActiveRecord::model($this->superClass);
+		}
+		return $this->_superModel;
+	}
+
+	protected function getSuperAttrs()
+	{
+		if (null === $this->_superAttrs)
+		{
+			$this->_superAttrs = array_merge(
+				$this->superModel->attributeNames(),
+				array_keys($this->superModel->relations())
+			);
+		}
+		return $this->_superAttrs;
+	}
+
+	public function getSuperInst()
+	{
+		if (!($this->_superInst instanceof $this->superClass) || (('insert' !== $this->scenario) && ($this->id !== $this->_superInst->id)))
+		{
+			$this->_superInst = $this->id?
+				CActiveRecord::model($this->superClass)->findByPk($this->id)
+				:new $this->superClass;
+			if (null === $this->_superInst)
+			{
+				throw new CException('Cant find base for '.get_class($this).'#'.$this->id);
+			}
+		}
+		return $this->_superInst;
+	}
+
 	protected function isSupperAttr($attribute)
 	{
-		return (!in_array($attribute,self::$_specialAttrs)) &&
-			(in_array($attribute,$this->superAttrs)
-				|| in_array($attribute,CActiveRecord::model($this->superClass)->attributeNames()));
+		return (!in_array($attribute,self::$_notSuperAttrs))
+			&& (in_array($attribute,$this->superAttrs)
+				|| method_exists($this->superModel,'get'.ucfirst($attribute)));
 	}
 
 	public function __get($name)
 	{
-		if ($this->isSupperAttr($name))
+		$getter = 'get'.$name;
+
+		if (method_exists($this,$getter))
+		{
+			return $this->$getter();
+		}
+		elseif ($this->isSupperAttr($name))
 		{
 			return $this->superInst->$name;
 		}
@@ -35,7 +76,13 @@ abstract class AgsMTISupport extends AgsAR
 
 	public function __set($name,$value)
 	{
-		if ($this->isSupperAttr($name))
+		$setter = 'set'.$name;
+
+		if (method_exists($this,$setter))
+		{
+			return $this->$setter($value);
+		}
+		elseif ($this->isSupperAttr($name))
 		{
 			return $this->superInst->$name = $value;
 		}
@@ -45,11 +92,22 @@ abstract class AgsMTISupport extends AgsAR
 		}
 	}
 
+	public function __call($name,$args)
+	{
+		if (method_exists($this->superInst,$name))
+		{
+			call_user_func_array(array($this->superInst,$name),$args);
+		}
+	}
+
 	public function setScenario($value)
 	{
 		parent::setScenario($value);
 
-		$this->superInst->scenario = $value;
+		if ($this->superInst instanceof CActiveRecord)
+		{
+			$this->superInst->scenario = $value;
+		}
 	}
 
 	public function isAttributeRequired($attribute)
@@ -64,26 +122,6 @@ abstract class AgsMTISupport extends AgsAR
 		}
 	}
 
-	public function getSuperInst()
-	{
-		if (null === $this->_superClass)
-		{
-			$this->_superClass = $this->getSuperClass();
-		}
-
-		if (($this->_superClass !== get_class($this->_superInst)) || (('insert' !== $this->scenario) && ($this->id !== $this->_superInst->id)))
-		{
-			$this->_superInst = $this->id?
-				CActiveRecord::model($this->_superClass)->findByAttributes(array('id'=>(int)$this->id))
-				:new $this->_superClass();
-			if (null === $this->_superInst)
-			{
-				throw new CException('Cant find base for '.get_class($this).'#'.$this->id);
-			}
-		}
-		return $this->_superInst;
-	}
-
 	public function setAttributes($attributes,$safeOnly=true)
 	{
 		parent::setAttributes($attributes,$safeOnly);
@@ -95,7 +133,7 @@ abstract class AgsMTISupport extends AgsAR
 		}
 		catch (Exception $e)
 		{
-			//nothing,just to avoid
+			//nothing,just to avoid exception being throw
 		}
 	}
 
