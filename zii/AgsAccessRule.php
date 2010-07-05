@@ -121,8 +121,6 @@ class AgsAccessRule
 		{
 			list($ruleName,$ruleParamSrl) = explode(':',$this->_rule);
 			$ruleParams = explode(',',$ruleParamSrl);
-			Y::l($ruleName,'debug');
-			Y::l($ruleParamSrl,'debug');
 			switch ($ruleName)
 			{
 				case 'role':
