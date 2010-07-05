@@ -82,7 +82,7 @@ return array(
 	'err:userNotFound'=>'{account}并没有注册',
 	'err:accountNotActivated'=>'帐号还未激活。',
 	'err:wrongPassword'=>'密码不正确',
-	'err:invalidParams'=>'提供了非法的参数 {where}',
+	'err:invalidParams'=>'提供了非法的参数 {where}:{paramInfo}',
 	'err:internal'=>'/. .\ 遇到了一些小麻烦，再试一次看看有没有好运气？',
 	'err:mkdirFail'=>'创建目录失败',
 	/**
