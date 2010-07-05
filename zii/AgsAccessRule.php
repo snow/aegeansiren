@@ -4,12 +4,20 @@ class AgsAccessRule
 {
 	private $_childRules = array();
 	private $_rule;
-	private $_nextRule = false;
+	private $_nextRule;
+	private $_isRoot;
 
 	function __construct($rule)
 	{
-		$rule = trim($rule);
-		$this->extractRule($rule);
+		if (1 === Y::u()->id)
+		{
+			$this->_isRoot = true;
+		}
+		else
+		{
+			$rule = trim($rule);
+			$this->extractRule($rule);
+		}
 	}
 
 	private function extractRule($rule)
@@ -108,6 +116,11 @@ class AgsAccessRule
 
 	public function execRule()
 	{
+		if ($this->_isRoot)
+		{
+			return true;
+		}
+
 		$success = false;
 		if (count($this->_childRules))
 		{
@@ -124,7 +137,7 @@ class AgsAccessRule
 			switch ($ruleName)
 			{
 				case 'role':
-					return isset(Y::u()->role) && in_array(Y::u()->role,$ruleParams);
+					return isset(Y::u()->roles) && count(array_intersect($ruleParams,Y::u()->roles));
 				break;
 
 				case 'privileges':
