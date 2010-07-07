@@ -70,6 +70,14 @@ return array(
 	'User:signup'=>'注册',
 	'User:signin'=>'登录',
 	'User:signout'=>'退出',
+	/*
+	 *
+	 */
+	'AgsAdBlock:id'=>'ID',
+	'AgsAdBlock:width'=>'宽度',
+	'AgsAdBlock:height'=>'高度',
+	'AgsAdBlock:note'=>'说明',
+	'AgsAdBlock:sizeTip'=>'下面填写的高宽仅用于提示',
 	/**
 	 * error
 	 */
