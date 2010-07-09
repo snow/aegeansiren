@@ -47,7 +47,7 @@ class S
 		return is_string($url)?current(explode('/',array_pop(explode('//',$url,2)),2)):'';
 	}
 
-	public static function getRandomString($type = 'alnum', $len = 8)
+	public static function getRandomString($len = 8,$type = 'alnum')
 	{
 		switch($type)
 		{
