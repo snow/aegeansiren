@@ -9,6 +9,9 @@ class AgsMTA extends CComponent
 		require_once dirname(__FILE__).'/class.phpmailer.php';
 	}
 
+	/**
+	 * @return PHPMailer
+	 */
 	public function getMailer()
 	{
 		$mailer = new PHPMailer;
@@ -26,7 +29,7 @@ class AgsMTA extends CComponent
 			}
 		}
 
-		$mailer->SetFrom(Y::a()->params['sysmailAddr'],Y::a()->params['sysmailName']);
+		$mailer->SetFrom(Y::a()->params['sysmail']['addr'],Y::a()->params['sysmail']['name']);
 		$mailer->IsHTML(true);
 		$mailer->CharSet = 'utf-8';
 

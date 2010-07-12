@@ -41,7 +41,7 @@ return array(
 	'more'=>'更多',
 	'longDate'=>'{year}年{month}月{day}日',
 	'shortDate'=>'{month}月{day}日',
-	'done'=>'\(^__^)/ 搞定了',
+	'done'=>'搞定了',
 	'thx4feedback'=>'感谢您的反馈！',
 	'resentActivateMail'=>'包含激活链接的邮件已经发送到你邮箱。如果没有找到，不妨检查一下垃圾邮件。',
 	'forgotPassword'=>'忘了密码？',
@@ -53,8 +53,6 @@ return array(
 	'recoverPassword:mail:subject'=>'{name}，您的重设密码邮件',
 	'recoverPassword:mail:body'=>'{name}，别着急，我们来救你了~<br />点击下面的链接<p><a href="{link}">{link}</a></p>或者把链接复制到浏览器的地址栏然后回车。',
 	'closeWindow'=>'关闭本窗口',
-	'sad'=>'/. .\\',
-	'happy'=>'\(^__^)/',
 	'loading'=>'载入中......',
 	'tryRefresh'=>'如果长时间无响应请尝试刷新',
 	/*
@@ -78,6 +76,13 @@ return array(
 	'AgsAdBlock:height'=>'高度',
 	'AgsAdBlock:note'=>'说明',
 	'AgsAdBlock:sizeTip'=>'下面填写的高宽仅用于提示',
+	/*
+	 *
+	 */
+	'emotion:happy'=>'\(^__^)/',
+	'emotion:sad'=>'/. .\\',
+	'emotion:bad'=>':P',
+	'emotion:angry'=>'TAT',
 	/**
 	 * error
 	 */
@@ -94,6 +99,8 @@ return array(
 	'err:invalidRequest'=>'U\'re done here,silly rabbit',
 	'err:internal'=>'/. .\ 遇到了一些小麻烦，再试一次看看有没有好运气？',
 	'err:mkdirFail'=>'创建目录失败',
+	'err:unsafeCharacterDetected'=>'含有非法字符',
+	'err:onlyValidUrlCharactersAllowed'=>'只允许字幕数字和"_","-","."',
 	/**
 	 * notification
 	 */

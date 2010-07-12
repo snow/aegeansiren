@@ -41,6 +41,14 @@ class AgsStringValidator extends CValidator
 	 */
 	public $tooLong;
 	/**
+	 *
+	 */
+	public $onlyUrlCharacters=false;
+	/**
+	 *
+	 */
+	public $safeText=false;
+	/**
 	 * @var boolean whether the attribute value can be null or empty. Defaults to true,
 	 * meaning that if the attribute is empty, it is considered valid.
 	 */
@@ -60,18 +68,32 @@ class AgsStringValidator extends CValidator
 		$length=mb_strlen($value,'utf8');
 		if($this->min!==null && $length<$this->min)
 		{
-			$message=$this->tooShort!==null?$this->tooShort:Y::t('ags','error:tooShort');
+			$message=$this->tooShort!==null?$this->tooShort:Y::t('ags','err:tooShort');
 			$this->addError($object,$attribute,$message,array('{min}'=>$this->min));
 		}
 		if($this->max!==null && $length>$this->max)
 		{
-			$message=$this->tooLong!==null?$this->tooLong:Y::t('ags','error:tooLong');
+			$message=$this->tooLong!==null?$this->tooLong:Y::t('ags','err:tooLong');
 			$this->addError($object,$attribute,$message,array('{max}'=>$this->max));
 		}
 		if($this->is!==null && $length!==$this->is)
 		{
-			$message=$this->message!==null?$this->message:Y::t('ags','error:notMatchFixedLength');
+			$message=$this->message!==null?$this->message:Y::t('ags','err:notMatchFixedLength');
 			$this->addError($object,$attribute,$message,array('{length}'=>$this->is));
+		}
+		if ($this->onlyUrlCharacters)
+		{
+			if (preg_match('/[^abcdefghijklmnopqrstuvwxyz\d_\-\.]/',$object->$attribute))
+			{
+				$this->addError($object,$attribute,Y::t('ags','err:onlyValidUrlCharactersAllowed'));
+			}
+		}
+		if ($this->safeText)
+		{
+			if (preg_match('/[^\w\d_\s\-\.]/',$object->$attribute))
+			{
+				$this->addError($object,$attribute,Y::t('ags','err:unsafeCharacterDetected'));
+			}
 		}
 	}
 }
