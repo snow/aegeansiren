@@ -29,7 +29,7 @@ class AgsMTA extends CComponent
 			}
 		}
 
-		$mailer->SetFrom(Y::a()->params['sysmail']['addr'],Y::a()->params['sysmail']['name']);
+		$mailer->SetFrom(Y::a()->params['systemEmail']['addr'],Y::a()->params['systemEmail']['name']);
 		$mailer->IsHTML(true);
 		$mailer->CharSet = 'utf-8';
 

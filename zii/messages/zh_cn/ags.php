@@ -101,6 +101,7 @@ return array(
 	'err:mkdirFail'=>'创建目录失败',
 	'err:unsafeCharacterDetected'=>'含有非法字符',
 	'err:onlyValidUrlCharactersAllowed'=>'只允许字幕数字和"_","-","."',
+	'err:sendMailFailed'=>'未能发送邮件到 {email} 。请再尝试一次。如果问题重复出现，请联系管理员: {adminEmail}',
 	/**
 	 * notification
 	 */
