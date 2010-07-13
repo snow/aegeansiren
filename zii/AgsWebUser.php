@@ -51,4 +51,25 @@ class AgsWebUser extends CWebUser
 
 		return $notes;
 	}
+	
+	protected function renewCookie()
+	{
+		$cookies=Yii::app()->getRequest()->getCookies();
+		$cookie=$cookies->itemAt($this->getStateKeyPrefix());
+		if($cookie && !empty($cookie->value) && ($data=Yii::app()->getSecurityManager()->validateData($cookie->value))!==false)
+		{
+			$data=@unserialize($data);
+			if(is_array($data) && isset($data[0],$data[1],$data[2],$data[3]))
+			{
+				if(is_array($this->identityCookie))
+				{
+					foreach($this->identityCookie as $name=>$value)
+						$cookie->$name=$value;
+				}
+				$cookie->expire=time()+$data[2];
+				$cookies->remove($this->getStateKeyPrefix());
+				$cookies->add($cookie->name,$cookie);
+			}
+		}
+	}
 }
