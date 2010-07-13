@@ -141,7 +141,17 @@ class AgsAccessRule
 				break;
 
 				case 'privileges':
-					return isset(Y::u()->privilegeAr) && count(array_intersect($ruleParams,Y::u()->privilegeAr));
+					if (method_exists(Y::u(),hasPrivilege))
+					{
+						foreach ($ruleParams as $privilege)
+						{
+							if (Y::u()->hasPrivilege($privilege))
+							{
+								return true;
+							}
+						}
+					}
+					return  false;
 				break;
 
 				case 'users':
