@@ -48,7 +48,7 @@ class AgsComsenzWrapper extends CComponent
 		define('UC_DBCONNECT', $this->dbConnect);
 	}
 
-	public function syncLogin($uid)
+	/*public function syncLogin($uid)
 	{
 		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
 		return uc_user_synlogin($uid);
@@ -64,5 +64,23 @@ class AgsComsenzWrapper extends CComponent
 	{
 		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
 		return uc_get_user($username, $isUid);
+	}*/
+
+	public function checkUsername($username)
+	{
+		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
+		return uc_user_checkname($username);
+	}
+
+	public function checkEmail($email)
+	{
+		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
+		return uc_user_checkemail($email);
+	}
+
+	public function login($username,$password)
+	{
+		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
+		return uc_user_login($username,$password);
 	}
 }
