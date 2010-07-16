@@ -83,6 +83,21 @@ return array(
 	'emotion:sad'=>'/. .\\',
 	'emotion:bad'=>':P',
 	'emotion:angry'=>'TAT',
+	/*
+	 *
+	 */
+	'Asterism:aries'=>'白羊',
+	'Asterism:taurus'=>'金牛',
+	'Asterism:gemini'=>'双子',
+	'Asterism:cancer'=>'巨蟹',
+	'Asterism:leo'=>'狮子',
+	'Asterism:virgo'=>'处女',
+	'Asterism:libra'=>'天枰',
+	'Asterism:scorpio'=>'天蝎',
+	'Asterism:sagittarius'=>'射手',
+	'Asterism:capricorn'=>'摩羯',
+	'Asterism:aquarius'=>'水瓶',
+	'Asterism:pisces'=>'双鱼',
 	/**
 	 * error
 	 */
