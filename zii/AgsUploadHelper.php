@@ -84,6 +84,20 @@ class AgsUploadHelper extends CComponent
 		return $filename;
 	}
 
+	public function genFilenameWithoutExt($dir)
+	{
+		$path = date('Ym',time()).'/'.date('d',time());
+		if (!(is_dir($this->dirBase.'/'.$dir.'/'.$path) || mkdir($this->dirBase.'/'.$dir.'/'.$path,0777,true)))
+			throw new CException('err:failedToMkdir:'.$this->dirBase.'/'.$dir.'/'.$path);
+
+		$filename = $path.'/'.S::getRandomString();
+		while (file_exists($this->dirBase.'/'.$dir.'/'.$filename))
+		{
+			$filename = $path.'/'.S::getRandomString();
+		}
+		return $filename;
+	}
+
 	public function delFile($fileName,$dir)
 	{
 		unlink($this->dirBase.'/'.$dir.'/'.$fileName);
