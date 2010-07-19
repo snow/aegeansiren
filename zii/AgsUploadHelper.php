@@ -119,6 +119,16 @@ class AgsUploadHelper extends CComponent
 			return FALSE;
 		}
 
+		if (0 === $maxwidth)
+		{
+			$maxwidth = $imgsizearray[0];
+		}
+
+		if (0 === $maxheight)
+		{
+			$maxheight = $imgsizearray[1];
+		}
+
 		// Get width and height
 		$width = $imgsizearray[0];
 		$height = $imgsizearray[1];
