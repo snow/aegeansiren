@@ -4,7 +4,7 @@
  * @author snow,flare
  *
  */
-class AgsSterism{
+class AgsAsterism{
 	const ARIES = 'aries';
 	const TAURUS = 'taurus';
 	const GEMINI = 'gemini';
