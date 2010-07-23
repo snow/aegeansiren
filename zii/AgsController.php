@@ -25,7 +25,7 @@ abstract class AgsController extends CController
 		}
 	}
 
-	public function render($view,$data=null,$return=false)
+	public function render($view,$data=null,$return=false,$processOutput=false)
 	{
 		$output=$this->renderPartial($view,$data,true);
 		if(($layoutFile=$this->getLayoutFile($this->layout))!==false)
@@ -39,7 +39,10 @@ abstract class AgsController extends CController
 			),true);
 		}
 
-		$output=$this->processOutput($output);
+		if ($processOutput)
+		{
+			$output=$this->processOutput($output);
+		}
 
 		if($return)
 			return $output;
