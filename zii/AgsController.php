@@ -36,6 +36,7 @@ abstract class AgsController extends CController
 			$output=$this->renderFile($layoutFile,array(
 				'content'=>$output,
 				'notifications'=>$notifications,
+				'docId'=>$this->id.ucfirst($this->action->id),
 			),true);
 		}
 
