@@ -1,12 +1,7 @@
 <?php
 
-class AgsWebUser extends CWebUser
+abstract class AgsWebUser extends CWebUser
 {
-	public function getIsRoot()
-	{
-		return 1 == $this->id;
-	}
-
 	public function getName()
 	{
 		if(($name=$this->getState('__name'))!==null)
@@ -51,7 +46,10 @@ class AgsWebUser extends CWebUser
 
 		return $notes;
 	}
-	
+
+	/**
+	 * override to add process on $this->indentityCookie
+	 */
 	protected function renewCookie()
 	{
 		$cookies=Yii::app()->getRequest()->getCookies();
