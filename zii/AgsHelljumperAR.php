@@ -1,5 +1,17 @@
 <?php
-
+/**
+ * this class make its subclass able to import into other apps
+ * useage:
+ * 'components'=>array(
+ * 	'classId'=>array(
+ * 		'class'=>'alias.to.your.subclass',
+ * 		'dataAccessMode'=>'db', //or soap
+ * 	),
+ * ),
+ *
+ * @author snow
+ *
+ */
 abstract class AgsHelljumperAR extends AgsAR
 {
 	const DATA_ACCESS_NATIVE = 'native';
@@ -7,7 +19,7 @@ abstract class AgsHelljumperAR extends AgsAR
 	const DATA_ACCESS_SOAP = 'soap';
 
 	public $remoteApiUrl;
-	protected static $_dataAccessMethod;
+	protected static $_dataAccessMode;
 	protected $_db;
 
 	public function init(){}
@@ -32,23 +44,23 @@ abstract class AgsHelljumperAR extends AgsAR
 	{
 		$class = get_class($this);
 		$instance = new $class;
-		$instance->dataAccessMethod = $instance->dataAccessMethod;
+		$instance->dataAccessMode = $instance->dataAccessMode;
 		return $instance;
 	}
 
-	public function getDataAccessMethod()
+	public function getDataAccessMode()
 	{
-		if (null===self::$_dataAccessMethod)
+		if (null===self::$_dataAccessMode)
 		{
-			self::$_dataAccessMethod = self::DATA_ACCESS_NATIVE;
+			self::$_dataAccessMode = self::DATA_ACCESS_NATIVE;
 		}
-		return self::$_dataAccessMethod;
+		return self::$_dataAccessMode;
 	}
 
-	public function setDataAccessMethod($dataAccessMethod)
+	public function setdataAccessMode($dataAccessMode)
 	{
-		self::$_dataAccessMethod = $dataAccessMethod;
-		switch (self::$_dataAccessMethod)
+		self::$_dataAccessMode = $dataAccessMode;
+		switch (self::$_dataAccessMode)
 		{
 			case self::DATA_ACCESS_DB:
 			case self::DATA_ACCESS_NATIVE:
@@ -67,7 +79,7 @@ abstract class AgsHelljumperAR extends AgsAR
 	 */
 	public function getDbConnection()
 	{
-		switch ($this->dataAccessMethod)
+		switch ($this->dataAccessMode)
 		{
 			case self::DATA_ACCESS_DB:
 				if (null===$this->_db)
@@ -107,7 +119,7 @@ abstract class AgsHelljumperAR extends AgsAR
 			break;
 
 			default:
-				throw new CException('err:dbConnectionNotSupportedInMode:'.$this->dataAccessMethod);
+				throw new CException('err:dbConnectionNotSupportedInMode:'.$this->dataAccessMode);
 			break;
 		}
 	}
