@@ -19,15 +19,10 @@ class AgsQqValidator extends CValidator
 		}
 		else
 		{
-			if (!self::validateQq($object->$attribute))
+			if (!S::isTencentQq($object->$attribute))
 			{
 				$object->addError($attribute,'Invalid qq for '.$attribute);
 			}
 		}
-	}
-
-	public static function validateQq($qq)
-	{
-		return is_numeric($qq)?(($len = strlen($qq)) >= 5 && $len <= 10):preg_match(self::emailPattern,$qq);
 	}
 }

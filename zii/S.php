@@ -42,6 +42,11 @@ class S
 		return preg_match($pattern,$string);
 	}
 
+	public static function isTencentQq($qq)
+	{
+		return is_numeric($qq)?(($len = strlen($qq)) >= 5 && $len <= 10):preg_match(self::emailPattern,$qq);
+	}
+
 	public static function getUrlDomain($url)
 	{
 		return is_string($url)?current(explode('/',array_pop(explode('//',$url,2)),2)):'';
