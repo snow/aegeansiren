@@ -5,19 +5,11 @@ class AgsAccessRule
 	private $_childRules = array();
 	private $_rule;
 	private $_nextRule;
-	private $_isRoot;
 
 	function __construct($rule)
 	{
-		if (1 === Y::u()->id)
-		{
-			$this->_isRoot = true;
-		}
-		else
-		{
-			$rule = trim($rule);
-			$this->extractRule($rule);
-		}
+		$rule = trim($rule);
+		$this->extractRule($rule);
 	}
 
 	private function extractRule($rule)
@@ -116,11 +108,6 @@ class AgsAccessRule
 
 	public function execRule()
 	{
-		if ($this->_isRoot)
-		{
-			return true;
-		}
-
 		$success = false;
 		if (count($this->_childRules))
 		{

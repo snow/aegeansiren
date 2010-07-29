@@ -12,12 +12,6 @@ abstract class AgsController extends CController
 
 	protected function accessControl($controlString = '')
 	{
-		// root
-		if (Y::u()->isRoot)
-		{
-			return;
-		}
-
 		$accessRule = new AgsAccessRule($controlString);
 		if (!$accessRule->execRule())
 		{
