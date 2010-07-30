@@ -3,7 +3,7 @@
  *
  * define access role in action like this:
  *
- * $this->accessControl('(user:dragon,makelu,snow+role:admin)|role:root');
+ * $this->accessControl('(user:dragon,makelu,snow+roles:admin,superman)|roles:root');
  * $this->accessControl('ips:127.0.0.1,8.8.8.8');
  *
  * @author snow
@@ -132,7 +132,7 @@ class AgsAccessRule
 			$ruleParams = explode(',',$ruleParamSrl);
 			switch ($ruleName)
 			{
-				case 'role':
+				case 'roles':
 					return isset(Y::u()->roles) && count(array_intersect($ruleParams,Y::u()->roles));
 				break;
 
