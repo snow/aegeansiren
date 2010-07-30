@@ -44,4 +44,26 @@ abstract class AgsController extends CController
 		else
 			echo $output;
 	}
+
+	protected function ajaxResponse($success = true,$data,$terminate = true)
+	{
+		echo json_encode(array_merge(array(
+			'success'=>$success,
+		),$data));
+
+		if ($terminate)
+		{
+			Y::a()->end();
+		}
+	}
+
+	public function ajaxSuccess($data,$terminate = true)
+	{
+		$this->ajaxResponse(true,$data,$terminate);
+	}
+
+	public function ajaxError($message,$terminate = true)
+	{
+		$this->ajaxResponse(false,array('message'=>$message),$terminate);
+	}
 }
