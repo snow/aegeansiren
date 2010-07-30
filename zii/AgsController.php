@@ -47,9 +47,14 @@ abstract class AgsController extends CController
 
 	protected function ajaxResponse($success = true,$data,$terminate = true)
 	{
-		echo json_encode(array_merge(array(
-			'success'=>$success,
-		),$data));
+		$response = array('success'=>$success);
+
+		if (is_array($data))
+		{
+			$response = array_merge($response,$data);
+		}
+
+		echo json_encode($response);
 
 		if ($terminate)
 		{
@@ -57,7 +62,7 @@ abstract class AgsController extends CController
 		}
 	}
 
-	public function ajaxSuccess($data,$terminate = true)
+	public function ajaxSuccess($data = null,$terminate = true)
 	{
 		$this->ajaxResponse(true,$data,$terminate);
 	}
