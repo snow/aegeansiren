@@ -1,5 +1,14 @@
 <?php
-
+/**
+ *
+ * define access role in action like this:
+ *
+ * $this->accessControl('(user:dragon,makelu,snow+role:admin)|role:root');
+ * $this->accessControl('ips:127.0.0.1,8.8.8.8');
+ *
+ * @author snow
+ *
+ */
 class AgsAccessRule
 {
 	private $_childRules = array();
@@ -25,8 +34,8 @@ class AgsAccessRule
 				default:
 				break;
 
-				case '+':
-				case ',':
+				case '&':
+				case '|':
 					if ($indicator<$i)
 					{
 						$ruleSegments[] = substr($rule,$indicator,$i-$indicator);
@@ -79,7 +88,7 @@ class AgsAccessRule
 		}
 		else
 		{
-			if ($firstOr = array_search(',',$ruleOperators))
+			if ($firstOr = array_search('|',$ruleOperators))
 			{
 				$endChildSegIndex = $firstOr+1;
 			}
@@ -144,6 +153,10 @@ class AgsAccessRule
 				case 'users':
 					return (in_array('@',$ruleParams) && (!Y::u()->isGuest))
 						|| (isset(Y::u()->username) && in_array(Y::u()->username,$ruleParams));
+				break;
+
+				case 'ips':
+					return in_array(Y::r()->userHostAddress,$ruleParams);
 				break;
 
 				default:
