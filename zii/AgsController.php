@@ -29,6 +29,7 @@ abstract class AgsController extends CController
 
 			$output=$this->renderFile($layoutFile,array(
 				'content'=>$output,
+				'sidebar'=>isset($data['sidebar'])?$data['sidebar']:false,
 				'notifications'=>$notifications,
 				'docId'=>$this->id.ucfirst($this->action->id),
 			),true);
