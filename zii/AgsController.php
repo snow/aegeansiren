@@ -2,12 +2,12 @@
 
 abstract class AgsController extends CController
 {
-	const NOTIFICATION_LV_NOTE = 1;
-	const NOTIFICATION_LV_ERROR = 2;
+	const NOTE_LV_NOTE = 1;
+	const NOTE_LV_ERROR = 2;
 
-	protected function addUserNotification($message,$level=self::NOTIFICATION_LV_NOTE)
+	protected function addUserNote($message,$level=self::NOTE_LV_NOTE)
 	{
-		Y::u()->addNotification($message,$level);
+		Y::u()->addNote($message,$level);
 	}
 
 	protected function accessControl($controlString = '')
@@ -24,13 +24,13 @@ abstract class AgsController extends CController
 		$output=$this->renderPartial($view,$data,true);
 		if(($layoutFile=$this->getLayoutFile($this->layout))!==false)
 		{
-			$notifications = Y::u()->getNotifications();
-			Y::u()->clearNotifications();
+			$notes = Y::u()->getNotes();
+			Y::u()->clearNotes();
 
 			$output=$this->renderFile($layoutFile,array(
 				'content'=>$output,
 				'sidebar'=>isset($data['sidebar'])?$data['sidebar']:false,
-				'notifications'=>$notifications,
+				'notes'=>$notes,
 				'docId'=>$this->id.ucfirst($this->action->id),
 			),true);
 		}
