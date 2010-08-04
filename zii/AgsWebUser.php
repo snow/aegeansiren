@@ -12,7 +12,7 @@ abstract class AgsWebUser extends CWebUser
 
 	public function addNotification($message,$level)
 	{
-		$notes = $this->getState('__notification');
+		$notes = $this->getState('__notes');
 		if (!is_array($notes))
 		{
 			$notes = array();
@@ -21,12 +21,12 @@ abstract class AgsWebUser extends CWebUser
 			'lv'=>$level,
 			'msg'=>$message,
 		);
-		$this->setState('__notification',$notes);
+		$this->setState('__notes',$notes);
 	}
 
 	public function clearNotifications()
 	{
-		$this->setState('__notification',null);
+		$this->setState('__notes',null);
 	}
 
 	public function getNotifications()
@@ -36,9 +36,9 @@ abstract class AgsWebUser extends CWebUser
 			'note'=>array(),
 		);
 
-		if ($this->hasState('__notification'))
+		if ($this->hasState('__notes'))
 		{
-			foreach ($this->getState('__notification') as $note)
+			foreach ($this->getState('__notes') as $note)
 			{
 				$notes[(AgsController::NOTIFICATION_LV_ERROR === $note['lv'])?'s-err':'s-note'][] = $note['msg'];
 			}
