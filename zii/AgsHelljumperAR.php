@@ -44,7 +44,7 @@ abstract class AgsHelljumperAR extends AgsAR
 	{
 		$class = get_class($this);
 		$instance = new $class;
-		$instance->dataAccessMode = $instance->dataAccessMode;
+		$instance->dataAccessMode = $this->dataAccessMode;
 		return $instance;
 	}
 
