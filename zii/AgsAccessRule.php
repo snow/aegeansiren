@@ -119,7 +119,7 @@ class AgsAccessRule
 	{
 		$success = false;
 
-		if (isset(Y::u()->roles) && is_array(Y::u()->roles) && in_array('AptRoot',Y::u()->roles))
+		if (1==Y::u()->id/*isset(Y::u()->roles) && is_array(Y::u()->roles) && in_array('AgsRoot',Y::u()->roles)*/)
 		{
 			$success = true;
 		}
