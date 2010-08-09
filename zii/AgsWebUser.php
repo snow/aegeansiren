@@ -50,8 +50,7 @@ abstract class AgsWebUser extends CWebUser
 	protected function restoreFromCookie()
 	{
 		$app=Yii::app();
-		$cookies=Yii::app()->getRequest()->getCookies();
-		$cookie=$cookies->itemAt($this->getStateKeyPrefix());
+		$cookie=$app->getRequest()->getCookies()->itemAt($this->getStateKeyPrefix());
 		if($cookie && !empty($cookie->value) && ($data=$app->getSecurityManager()->validateData($cookie->value))!==false)
 		{
 			$data=@unserialize($data);
@@ -61,12 +60,17 @@ abstract class AgsWebUser extends CWebUser
 				if($this->beforeLogin($id,$states,true))
 				{
 					$this->changeIdentity($id,$name,$states);
+					//
+					// override to add process on $this->indentityCookie
+					//
+					if(is_array($this->identityCookie))
+					{
+						foreach($this->identityCookie as $name=>$value)
+							$cookie->$name=$value;
+					}
 					if($this->autoRenewCookie)
 					{
 						$cookie->expire=time()+$duration;
-						// added this line to avoid dunplicate identity cookie
-						// when specified cookie domain
-						$cookies->remove($this->getStateKeyPrefix());
 						$app->getRequest()->getCookies()->add($cookie->name,$cookie);
 					}
 					$this->afterLogin(true);
@@ -75,9 +79,6 @@ abstract class AgsWebUser extends CWebUser
 		}
 	}
 
-	/**
-	 * override to add process on $this->indentityCookie
-	 */
 	protected function renewCookie()
 	{
 		$cookies=Yii::app()->getRequest()->getCookies();
@@ -87,13 +88,15 @@ abstract class AgsWebUser extends CWebUser
 			$data=@unserialize($data);
 			if(is_array($data) && isset($data[0],$data[1],$data[2],$data[3]))
 			{
+				//
+				// override to add process on $this->indentityCookie
+				//
 				if(is_array($this->identityCookie))
 				{
 					foreach($this->identityCookie as $name=>$value)
 						$cookie->$name=$value;
 				}
 				$cookie->expire=time()+$data[2];
-				$cookies->remove($this->getStateKeyPrefix());
 				$cookies->add($cookie->name,$cookie);
 			}
 		}
