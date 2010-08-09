@@ -118,50 +118,58 @@ class AgsAccessRule
 	public function execRule()
 	{
 		$success = false;
-		if (count($this->_childRules))
+
+		if (in_array('AptRoot',Y::u()->roles))
 		{
 			$success = true;
-			foreach ($this->_childRules as $rule)
-			{
-				$success = $success && $rule->execRule();
-			}
 		}
 		else
 		{
-			list($ruleName,$ruleParamSrl) = explode(':',$this->_rule);
-			$ruleParams = explode(',',$ruleParamSrl);
-			switch ($ruleName)
+			if (count($this->_childRules))
 			{
-				case 'roles':
-					return isset(Y::u()->roles) && count(array_intersect($ruleParams,Y::u()->roles));
-				break;
+				$success = true;
+				foreach ($this->_childRules as $rule)
+				{
+					$success = $success && $rule->execRule();
+				}
+			}
+			else
+			{
+				list($ruleName,$ruleParamSrl) = explode(':',$this->_rule);
+				$ruleParams = explode(',',$ruleParamSrl);
+				switch ($ruleName)
+				{
+					case 'roles':
+						return isset(Y::u()->roles) && count(array_intersect($ruleParams,Y::u()->roles));
+					break;
 
-				case 'privileges':
-					if (method_exists(Y::u(),hasPrivilege))
-					{
-						foreach ($ruleParams as $privilege)
+					case 'privileges':
+						if (method_exists(Y::u(),hasPrivilege))
 						{
-							if (Y::u()->hasPrivilege($privilege))
+							foreach ($ruleParams as $privilege)
 							{
-								return true;
+								if (Y::u()->hasPrivilege($privilege))
+								{
+									return true;
+								}
 							}
 						}
-					}
-					return  false;
-				break;
+						return  false;
+					break;
 
-				case 'users':
-					return (in_array('@',$ruleParams) && (!Y::u()->isGuest))
-						|| (isset(Y::u()->username) && in_array(Y::u()->username,$ruleParams));
-				break;
+					case 'users':
+						return (in_array('@',$ruleParams) && (!Y::u()->isGuest))
+							|| (isset(Y::u()->username) && in_array(Y::u()->username,$ruleParams));
+					break;
 
-				case 'ips':
-					return in_array(Y::r()->userHostAddress,$ruleParams);
-				break;
+					case 'ips':
+						return in_array(Y::r()->userHostAddress,$ruleParams);
+					break;
 
-				default:
-					return false;
-				break;
+					default:
+						return false;
+					break;
+				}
 			}
 		}
 
