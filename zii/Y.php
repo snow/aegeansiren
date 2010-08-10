@@ -11,7 +11,7 @@ class Y
 	const ACCESS_ONLY_FRIEND = 40;
 	const ACCESS_SIGNEDIN_USERS = 100;
 	const ACCESS_PUBLIC = 200;
-	
+
 	public static function t($category,$message,$params=array(),$source=null,$language=null)
 	{
 		return Yii::t($category,$message,$params,$source,$language);
@@ -45,5 +45,10 @@ class Y
 	public static function r()
 	{
 		return self::a()->request;
+	}
+
+	public static function p($key)
+	{
+		return isset(self::a()->params[$key])?self::a()->params[$key]:null;
 	}
 }
