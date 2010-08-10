@@ -24,15 +24,14 @@ abstract class AgsController extends CController
 		$output=$this->renderPartial($view,$data,true);
 		if(($layoutFile=$this->getLayoutFile($this->layout))!==false)
 		{
-			$notes = Y::u()->getNotes();
-			Y::u()->clearNotes();
-
 			$output=$this->renderFile($layoutFile,array(
 				'content'=>$output,
 				'sidebar'=>isset($data['sidebar'])?$data['sidebar']:false,
-				'userNotes'=>$notes,
+				'userNotes'=>Y::u()->getNotes(),
 				'docId'=>$this->id.ucfirst($this->action->id),
 			),true);
+
+			Y::u()->clearNotes();
 		}
 
 		if ($processOutput)

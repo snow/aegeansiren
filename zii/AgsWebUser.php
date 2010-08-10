@@ -12,7 +12,7 @@ abstract class AgsWebUser extends CWebUser
 
 	public function addNote($message,$level)
 	{
-		$notes = $this->getState('__notes');
+		$notes = $this->getState('ags-userNotes');
 		if (!is_array($notes))
 		{
 			$notes = array();
@@ -21,24 +21,24 @@ abstract class AgsWebUser extends CWebUser
 			'lv'=>$level,
 			'msg'=>$message,
 		);
-		$this->setState('__notes',$notes);
+		$this->setState('ags-userNotes',$notes);
 	}
 
 	public function clearNotes()
 	{
-		$this->setState('__notes',null);
+		$this->setState('ags-userNotes',null);
 	}
 
 	public function getNotes()
 	{
 		$notes = array(
-			'error'=>array(),
-			'note'=>array(),
+			's-err'=>array(),
+			's-note'=>array(),
 		);
 
-		if ($this->hasState('__notes'))
+		if ($this->hasState('ags-userNotes'))
 		{
-			foreach ($this->getState('__notes') as $note)
+			foreach ($this->getState('ags-userNotes') as $note)
 			{
 				$notes[(AgsController::NOTE_LV_ERROR === $note['lv'])?'s-err':'s-note'][] = $note['msg'];
 			}
