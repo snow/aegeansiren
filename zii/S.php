@@ -42,9 +42,14 @@ class S
 		return preg_match($pattern,$string);
 	}
 
-	public static function isTencentQq($qq)
+	public static function isTencentQq($string)
 	{
-		return is_numeric($qq)?(($len = strlen($qq)) >= 5 && $len <= 10):self::isEmail($qq);
+		return is_numeric($string)?(($len = strlen($string)) >= 5 && $len <= 10):self::isEmail($string);
+	}
+
+	public static function isIpAddress($string)
+	{
+		return (false!==inet_pton($string));
 	}
 
 	public static function getUrlDomain($url)
