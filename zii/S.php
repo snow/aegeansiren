@@ -4,11 +4,25 @@
  */
 class S
 {
-	public static function d($var)
+	const AFTER_VARDUMP_CONTINUE = 0;
+	const AFTER_VARDUMP_END = 1;
+	const AFTER_VARDUMP_TERMINATE = 2;
+
+	public static function d($var,$afterDebug = self::AFTER_VARDUMP_END)
 	{
 		echo '<pre>';
 		var_dump($var);
-		die('</pre>');
+		switch ($afterDebug)
+		{
+			case self::AFTER_VARDUMP_END:
+				echo '</pre>';
+				Y::a()->end();
+			break;
+
+			case self::AFTER_VARDUMP_TERMINATE:
+				die('</pre>');
+			break;
+		}
 	}
 
 	public static function getMultiform($word)

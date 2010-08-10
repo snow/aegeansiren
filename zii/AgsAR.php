@@ -8,6 +8,7 @@
 abstract class AgsAR extends CActiveRecord
 {
 	protected $_pkList;
+	private $_agsMetadata;
 
 	public function __get($name)
 	{
@@ -16,6 +17,10 @@ abstract class AgsAR extends CActiveRecord
 		if (method_exists($this,$getter))
 		{
 			return $this->$getter();
+		}
+		elseif (key_exists($name,$this->agsMetadata))
+		{
+			return $this->agsMetadata[$name];
 		}
 		else
 		{
@@ -29,12 +34,45 @@ abstract class AgsAR extends CActiveRecord
 
 		if (method_exists($this,$setter))
 		{
-			return $this->$setter($value);
+			$this->$setter($value);
+		}
+		elseif (key_exists($name,$this->agsMetadata))
+		{
+			$this->agsMetadata[$name] = $value;
 		}
 		else
 		{
-			return parent::__set($name,$value);
+			parent::__set($name,$value);
 		}
+	}
+
+	public function getAgsMetadata()
+	{
+		if (null === $this->_agsMetadata)
+		{
+			if ($this->hasAttribute('metaSerial'))
+			{
+				$this->_agsMetadata = json_decode($this->getAttribute('metaSerial'),true);
+			}
+
+			// for when metadata is empty
+			if (!is_array($this->_agsMetadata))
+			{
+				$this->_agsMetadata = array();
+			}
+		}
+
+		return $this->_agsMetadata;
+	}
+
+	public function setAgsMetadata($metadata)
+	{
+		$this->_agsMetadata = $metadata;
+	}
+
+	public function getAgsMetaKeys()
+	{
+		return array_keys($this->_agsMetadata);
 	}
 
 	public function getAttributeLabel($attribute)
@@ -67,6 +105,16 @@ abstract class AgsAR extends CActiveRecord
 		}
 
 		return parent::beforeValidate();
+	}
+
+	protected function beforeSave()
+	{
+		if ($this->hasAttribute('metaSerial') && is_array($this->_agsMetadata))
+		{
+			$this->metaSerial = json_encode($this->_agsMetadata);
+		}
+
+		return parent::beforeSave();
 	}
 
 	public function searchWithPKQuery($query,$params,$or=false)
