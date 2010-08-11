@@ -18,6 +18,10 @@ abstract class AgsHelljumperComponent extends CComponent
 	const DATA_ACCESS_DB = 'db';
 	const DATA_ACCESS_SOAP = 'soap';
 
+	/**
+	 *
+	 * @var array
+	 */
 	protected $config;
 
 	/**
@@ -31,6 +35,10 @@ abstract class AgsHelljumperComponent extends CComponent
 	 */
 	public $remoteApiUri;
 
+	/**
+	 *
+	 * @var CDbConnection
+	 */
 	protected $dbConnection;
 
 	/**
