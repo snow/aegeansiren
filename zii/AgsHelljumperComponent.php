@@ -31,7 +31,7 @@ abstract class AgsHelljumperComponent extends CComponent
 	 */
 	public $remoteApiUri;
 
-	protected $_dbConnection;
+	protected $dbConnection;
 
 	/**
 	 * @return array database config for helljumper to instantiate a CDbConnection instance
@@ -58,14 +58,14 @@ abstract class AgsHelljumperComponent extends CComponent
 			case self::DATA_ACCESS_DB:
 				if (isset($this->config['db']) && is_array($this->config['db']))
 				{
-					$this->_dbConnection = new CDbConnection;
+					$this->dbConnection = new CDbConnection;
 
 					foreach ($this->dbConfig as $key=>$value)
 					{
-						$this->_dbConnection->$key = $value;
+						$this->dbConnection->$key = $value;
 					}
 
-					$this->_dbConnection->active = true;
+					$this->dbConnection->active = true;
 				}
 				else
 				{
@@ -74,7 +74,7 @@ abstract class AgsHelljumperComponent extends CComponent
 			break;
 
 			case self::DATA_ACCESS_NATIVE:
-				$this->_dbConnection = Y::a()->db;
+				$this->dbConnection = Y::a()->db;
 			break;
 
 			default:
