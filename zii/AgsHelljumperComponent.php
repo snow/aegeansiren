@@ -44,7 +44,7 @@ abstract class AgsHelljumperComponent extends CComponent
 	/**
 	 * @return array database config for helljumper to instantiate a CDbConnection instance
 	 */
-	abstract public function getConfigFilePath();
+	abstract protected function getConfigFilePath();
 
 	/**
 	 * plz do call parent::init() in child classes
