@@ -50,37 +50,37 @@ class AgsComsenzWrapper extends CComponent
 
 	public function syncLogin($uid)
 	{
-		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
+		require_once Yii::getPathOfAlias('application.vendors.comsenz').'/client.php';
 		return uc_user_synlogin($uid);
 	}
 
 	public function syncLogout()
 	{
-		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
+		require_once Yii::getPathOfAlias('application.vendors.comsenz').'/client.php';
 		return uc_user_synlogout();
 	}
 
 	public function getUser($username,$isUid=false)
 	{
-		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
+		require_once Yii::getPathOfAlias('application.vendors.comsenz').'/client.php';
 		return uc_get_user($username, $isUid);
 	}
 
 	public function checkUsername($username)
 	{
-		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
+		require_once Yii::getPathOfAlias('application.vendors.comsenz').'/client.php';
 		return uc_user_checkname($username);
 	}
 
 	public function checkEmail($email)
 	{
-		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
+		require_once Yii::getPathOfAlias('application.vendors.comsenz').'/client.php';
 		return uc_user_checkemail($email);
 	}
 
 	public function login($username,$password)
 	{
-		require_once Yii::getPathOfAlias('application.comsenzClient').'/client.php';
+		require_once Yii::getPathOfAlias('application.vendors.comsenz').'/client.php';
 		return uc_user_login($username,$password);
 	}
 }
