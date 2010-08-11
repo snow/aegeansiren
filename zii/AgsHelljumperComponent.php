@@ -60,7 +60,7 @@ abstract class AgsHelljumperComponent extends CComponent
 				{
 					$this->dbConnection = new CDbConnection;
 
-					foreach ($this->dbConfig as $key=>$value)
+					foreach ($this->config['db'] as $key=>$value)
 					{
 						$this->dbConnection->$key = $value;
 					}
