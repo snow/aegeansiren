@@ -62,12 +62,12 @@ abstract class AgsController extends CController
 		}
 	}
 
-	public function ajaxSuccess($data = null,$terminate = true)
+	public function ajaxSucceed($data = null,$terminate = true)
 	{
 		$this->ajaxResponse(true,$data,$terminate);
 	}
 
-	public function ajaxError($message,$terminate = true)
+	public function ajaxFailed($message,$terminate = true)
 	{
 		$this->ajaxResponse(false,array('message'=>$message),$terminate);
 	}
