@@ -19,7 +19,7 @@ abstract class AgsController extends CController
 		}
 	}
 
-	public function render($view,$data=null,$return=false,$processOutput=false)
+	public function render($view,$data=null,$return=false,$processOutput=true)
 	{
 		$output=$this->renderPartial($view,$data,true);
 		if(($layoutFile=$this->getLayoutFile($this->layout))!==false)
