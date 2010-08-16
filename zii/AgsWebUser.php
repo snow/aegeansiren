@@ -100,5 +100,10 @@ abstract class AgsWebUser extends CWebUser
 				$cookies->add($cookie->name,$cookie);
 			}
 		}
+		else
+		{
+			// logout when cookie expired
+			$this->logout();
+		}
 	}
 }
