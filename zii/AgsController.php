@@ -45,9 +45,9 @@ abstract class AgsController extends CController
 			echo $output;
 	}
 
-	protected function ajaxResponse($success = true,$data,$terminate = true)
+	protected function ajaxResponse($succeed = true,$data,$terminate = true)
 	{
-		$response = array('success'=>$success);
+		$response = array('succeed'=>$succeed);
 
 		if (is_array($data))
 		{
