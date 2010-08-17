@@ -52,14 +52,14 @@ abstract class AgsHelljumperIIAR extends AgsAR
 					case self::DATA_ACCESS_DB:
 						if (isset($this->config['db']) && is_array($this->config['db']))
 						{
-							$this->dbConnection = new CDbConnection;
+							$this->_db = new CDbConnection;
 
 							foreach ($this->config['db'] as $key=>$value)
 							{
-								$this->dbConnection->$key = $value;
+								$this->_db->$key = $value;
 							}
 
-							$this->dbConnection->active = true;
+							$this->_db->active = true;
 						}
 						else
 						{
