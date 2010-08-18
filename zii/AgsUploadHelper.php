@@ -4,17 +4,12 @@ class AgsUploadHelper extends CComponent
 {
 	public $urlBase;
 	public $dirBase;
+
 	public static $allowdFileTypes = array(
-		'image'=>array(
-			'image/jpeg' => 'jpeg',
-			'image/pjpeg' => 'jpeg',
-			'image/png' => 'png',
-			'image/x-png' => 'png',
-			'image/gif' => 'gif'
-		),
-		'flash'=>array(
-			'application/x-shockwave-flash'=>'swf',
-		),
+		// image
+		'image/jpeg','image/pjpeg','image/png','image/x-png','image/gif',
+		//flash
+		'application/x-shockwave-flash'
 	);
 
 	public function init()
@@ -30,12 +25,12 @@ class AgsUploadHelper extends CComponent
 		}
 	}
 
-	public function saveUploadedFile($file,$type,$dir='misc')
+	public function saveUploadedFile($file,$dir='misc')
 	{
 		if (!(UPLOAD_ERR_OK === $file['error'] && 0 < $file['size']))
 			throw new CException('err:uploadFailed:'.$file['name']);
 
-		if (!key_exists($file['type'],self::$allowdFileTypes[$type]))
+		if (!$this->isFileTypeAllowed($file['type']))
 			throw new CException('err:uploadFileTypeNotAllowed:'.$file['type']);
 
 		$filename = $this->genFilename($file['name'],$dir);
@@ -44,6 +39,11 @@ class AgsUploadHelper extends CComponent
 			throw new CException('err:moveUploadedFileFailed:'.$file['name'].','.$filePath);
 
 		return $filename;
+	}
+
+	public function isFileTypeAllowed($type)
+	{
+		return in_array($type,self::$allowdFileTypes);
 	}
 
 	public function saveFileObject($content,$filename,$dir)
