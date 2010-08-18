@@ -123,6 +123,7 @@ class AgsScriptHelper extends CComponent
 		}
 
 		$bc = new Browscap('/tmp');
+		$bc->localFile = Yii::getPathOfAlias('ags').'/browscap.ini';
 		$this->_browser = $bc->getBrowser();
 		$this->_browserMVer = (int)$this->_browser->MajorVer;
 		/* all IE.I'm not sure if IE9 will have new engine */
