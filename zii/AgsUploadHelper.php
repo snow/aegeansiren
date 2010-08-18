@@ -188,7 +188,7 @@ class AgsUploadHelper extends CComponent
 			} else {
 				// place square region in the center
 				$widthoffset = floor(($width - $region_width) / 2);
-				$heightoffset = floor(($height - $region_height) / 2);
+				$heightoffset = 0;
 			}
 		} else {
 			// non-square new image
