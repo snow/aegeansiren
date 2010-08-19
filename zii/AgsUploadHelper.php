@@ -9,7 +9,9 @@ class AgsUploadHelper extends CComponent
 		// image
 		'image/jpeg','image/pjpeg','image/png','image/x-png','image/gif',
 		//flash
-		'application/x-shockwave-flash'
+		'application/x-shockwave-flash',
+		//general
+		'application/octet-stream'
 	);
 
 	public function init()
