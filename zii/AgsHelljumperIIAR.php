@@ -74,6 +74,12 @@ abstract class AgsHelljumperIIAR extends AgsAR
 		call_user_func(array($class=get_class($this),'initAgsHjConfigS'),$class);
 	}
 
+	/**
+	 * override this method to make subclass logics	 *
+	 * DO call parent::initAgsHjConfigS($class) in override
+	 *
+	 * @param string $class
+	 */
 	public static function initAgsHjConfigS($class)
 	{
 		if (null === self::$_agsHjConfig)
