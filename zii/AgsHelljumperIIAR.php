@@ -121,32 +121,33 @@ abstract class AgsHelljumperIIAR extends AgsAR
 
 		if (!isset(self::$_agsHjConfig[$class]))
 		{
-			// Y::p('helljumper')[$class] exists means this AR is droped outside
-			if (($clientHelljumperConfig = Y::p('helljumpers')) && isset($clientHelljumperConfig[$class]))
+			if (file_exists($file=call_user_func(array($class,'getAgsHjConfigFilePath'))))
 			{
-				if (file_exists($file=call_user_func(array($class,'getAgsHjConfigFilePath'))))
+				self::$_agsHjConfig[$class] = include($file);
+				// Y::p('helljumper')[$class] exists means this AR is droped outside
+				if (($clientHelljumperConfig = Y::p('helljumpers')) && isset($clientHelljumperConfig[$class]))
 				{
 					//merge mother-side config and then drop-in-side's
-					self::$_agsHjConfig[$class] = array_merge(include($file),$clientHelljumperConfig[$class]);
+					self::$_agsHjConfig[$class] = array_merge(self::$_agsHjConfig[$class],$clientHelljumperConfig[$class]);
 				}
-				else
-				{
-					throw new CException('err:missingConfig:'.$class);
-				}
+			}
+			else
+			{
+				throw new CException('err:missingConfig:'.$class);
+			}
 
-				switch (self::$_agsHjConfig[$class]['dataAccessMode'])
-				{
-					case self::DATA_ACCESS_DB:
-						if (!is_array(self::$_agsHjConfig[$class]['db']))
-						{
-							throw new CException('err:invalidDbConfig:'.$class);
-						}
-					break;
+			switch (self::$_agsHjConfig[$class]['dataAccessMode'])
+			{
+				case self::DATA_ACCESS_DB:
+					if (!is_array(self::$_agsHjConfig[$class]['db']))
+					{
+						throw new CException('err:invalidDbConfig:'.$class);
+					}
+				break;
 
-					case self::DATA_ACCESS_SOAP:
-						throw new CException('err:incomplete');
-					break;
-				}
+				case self::DATA_ACCESS_SOAP:
+					throw new CException('err:incomplete');
+				break;
 			}
 		}
 	}
@@ -178,7 +179,7 @@ abstract class AgsHelljumperIIAR extends AgsAR
 				return self::$_db[$class];
 			break;
 
-			case self::DATA_ACCESS_NATIVE:
+			default:
 				return parent::getDbConnection();
 			break;
 
