@@ -30,23 +30,47 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	const DATA_ACCESS_DB = 'db';
 	const DATA_ACCESS_SOAP = 'soap';
 
+	/**
+	 * store config for classes in $_agsHjConfig[className] = config_for_class format
+	 * @var array
+	 */
 	private static $_agsHjConfig;
+	/**
+	 * store db connections in $_db[className] = dbConn_for_class format
+	 * @var array
+	 */
 	private static $_db;
 
 	abstract public static function getAgsHjConfigFilePath();
 
 	public function __construct($scenario='insert')
 	{
-		$this->initAgsHjConfig();
+		// override this constructor to init helljumper config before every thing
+		// use call_user_func() to dynamically call subclass-override
+		// DO call parent::__construct() in override
+		call_user_func(array($class=get_class($this),'initAgsHjConfigS'),$class);
 
 		parent::__construct($scenario);
 	}
 
+	/**
+	 * shortcut to getAgsHjConfigS()
+	 * @param string $key
+	 * @return array config
+	 */
 	protected function getAgsHjConfig($key = '')
 	{
 		return self::getAgsHjConfigS(get_class($this),$key);
 	}
 
+	/**
+	 * get configs of a helljumper class
+	 * omitting $key to get all config of a class
+	 * or provide a key to get part of it
+	 *
+	 * @param string $class
+	 * @param string $key
+	 */
 	protected static function getAgsHjConfigS($class,$key = '')
 	{
 		if ($key)
@@ -59,19 +83,27 @@ abstract class AgsHelljumperIIAR extends AgsAR
 		}
 	}
 
+	/**
+	 * shortcut to setAgsHjConfigS()
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 */
 	protected function setAgsHjConfig($key,$value)
 	{
 		self::setAgsHjConfigS(get_class($this),$key,$value);
 	}
 
+	/**
+	 * set one of config items of a helljumper class
+	 *
+	 * @param string $class
+	 * @param string $key
+	 * @param mixed $value
+	 */
 	protected static function setAgsHjConfigS($class,$key,$value)
 	{
 		self::$_agsHjConfig[$class][$key] = $value;
-	}
-
-	private function initAgsHjConfig()
-	{
-		call_user_func(array($class=get_class($this),'initAgsHjConfigS'),$class);
 	}
 
 	/**
@@ -94,9 +126,8 @@ abstract class AgsHelljumperIIAR extends AgsAR
 			{
 				if (file_exists($file=call_user_func(array($class,'getAgsHjConfigFilePath'))))
 				{
-					//merge server side config and then client side config
+					//merge mother-side config and then drop-in-side's
 					self::$_agsHjConfig[$class] = array_merge(include($file),$clientHelljumperConfig[$class]);
-					//$this->config now available
 				}
 				else
 				{
@@ -121,7 +152,7 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	}
 
 	/**
-	 * override to use Shangrila's database connection.
+	 * override to make possible to use mother-app-side database connection.
 	 * @return CDbConnection the database connection used by active record.
 	 */
 	public function getDbConnection()
