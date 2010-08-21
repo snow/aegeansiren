@@ -1,12 +1,24 @@
 <?php
 /**
  * this class make its subclass able to import into other apps
- * useage:
- * 'components'=>array(
- * 	'classId'=>array(
- * 		'class'=>'alias.to.your.subclass',
- * 		'dataAccessMode'=>'db', //or soap
+ * config:
+ * mother app side:provide a config file contains at least db config like this:
+ * <?php
+ * return array(
+ * 	'db'=>array(
+ * 		'connectionString' => 'mysql:host=localhost;dbname=DB_NAME',
+ * 		'username' => 'USERNAME',
+ * 		'password' => 'PASSWORD',
  * 	),
+ * );
+ * and than return path to this file in public static function getAgsHjConfigFilePath();
+ *
+ * drop-in app side:define datab access mode or more config in application params
+ * 'params'=>array( *
+ * 		'helljumpers'=>array(
+ * 			'HelljumperClassOne'=>array('dataAccessMode'=>'db'),
+ * 			'HelljumperClassTwo'=>array('dataAccessMode'=>'soap'),
+ * 		),
  * ),
  *
  * @author snow
