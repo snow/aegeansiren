@@ -19,8 +19,9 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	const DATA_ACCESS_SOAP = 'soap';
 
 	private static $_agsHjConfig;
+	private static $_db;
 
-	abstract protected static function getAgsHjConfigFilePath();
+	abstract public static function getAgsHjConfigFilePath();
 
 	public function __construct($scenario='insert')
 	{
@@ -56,27 +57,27 @@ abstract class AgsHelljumperIIAR extends AgsAR
 		self::$_agsHjConfig[$class][$key] = $value;
 	}
 
-	protected function initAgsHjConfig()
+	private function initAgsHjConfig()
 	{
-		self::initAgsHjConfigS(get_class($this));
+		call_user_func(array($class=get_class($this),'initAgsHjConfigS'),$class);
 	}
 
-	protected static function initAgsHjConfigS($class)
+	public static function initAgsHjConfigS($class)
 	{
 		if (null === self::$_agsHjConfig)
 		{
 			self::$_agsHjConfig = array();
 		}
 
-		if (!isset(self::$_agsHjConfig[$class = get_class($this)]))
+		if (!isset(self::$_agsHjConfig[$class]))
 		{
 			// Y::p('helljumper')[$class] exists means this AR is droped outside
 			if (($clientHelljumperConfig = Y::p('helljumpers')) && isset($clientHelljumperConfig[$class]))
 			{
-				if (file_exists(self::getAgsHjConfigFilePath()))
+				if (file_exists($file=call_user_func(array($class,'getAgsHjConfigFilePath'))))
 				{
 					//merge server side config and then client side config
-					self::$_agsHjConfig[$class] = array_merge(include(self::getAgsHjConfigFilePath()),$clientHelljumperConfig[$class]);
+					self::$_agsHjConfig[$class] = array_merge(include($file),$clientHelljumperConfig[$class]);
 					//$this->config now available
 				}
 				else
@@ -110,19 +111,22 @@ abstract class AgsHelljumperIIAR extends AgsAR
 		switch ($this->getAgsHjConfig('dataAccessMode'))
 		{
 			case self::DATA_ACCESS_DB:
-				if (!(($dbConn = $this->getAgsHjConfig('dbConn')) instanceof CDbConnection))
+				if (null === self::$_db)
 				{
-					$dbConn = new CDbConnection;
+					self::$_db = array();
+				}
+				if (!(self::$_db[$class=get_class($this)] instanceof CDbConnection))
+				{
+					self::$_db[$class] = new CDbConnection;
 
 					foreach ($this->getAgsHjConfig('db') as $key=>$value)
 					{
-						$dbConn->$key = $value;
+						self::$_db[$class]->$key = $value;
 					}
 
-					$dbConn->active = true;
-					$this->setAgsHjConfig('dbConn',$dbConn);
+					self::$_db[$class]->active = true;
 				}
-				return $dbConn;
+				return self::$_db[$class];
 			break;
 
 			case self::DATA_ACCESS_NATIVE:
