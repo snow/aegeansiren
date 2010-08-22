@@ -1,14 +1,35 @@
 <?php
 /**
  * AegeanSiren ActiveRecord
- * A patch of CActiveRecord
- * @author snow
+ *
+ * New: metadata support
+ * New: auto timestamp
+ * Chg: prefer to getter or setter method than to access property directly in __get() and __set()
+ *
+ * @author snow.hellsing@gmail.com
  *
  */
 abstract class AgsAR extends CActiveRecord
 {
-	protected $_pkList;
 	private $_agsMetadata;
+	private static $_agsMetadataColumnName;
+
+	public function __construct($scenario = 'insert')
+	{
+		if (null === self::$_agsMetadataColumnName)
+		{
+			if (($config = Y::p(get_class($this))) && is_array($config) && isset($config['agsMetadataColumn']))
+			{
+				self::$_agsMetadataColumnName = $config['agsMetadataColumn'];
+			}
+			else
+			{
+				self::$_agsMetadataColumnName = 'metaSerial';
+			}
+		}
+
+		parent::__construct($scenario);
+	}
 
 	public function __get($name)
 	{
@@ -18,9 +39,9 @@ abstract class AgsAR extends CActiveRecord
 		{
 			return $this->$getter();
 		}
-		elseif (key_exists($name,$this->agsMetadata))
+		elseif (in_array($name,$this->getAgsMetaKeys()))
 		{
-			return $this->agsMetadata[$name];
+			return $this->_agsMetadata[$name];
 		}
 		else
 		{
@@ -36,9 +57,9 @@ abstract class AgsAR extends CActiveRecord
 		{
 			$this->$setter($value);
 		}
-		elseif (key_exists($name,$this->agsMetadata))
+		elseif (in_array($name,$this->getAgsMetaKeys()))
 		{
-			$this->agsMetadata[$name] = $value;
+			$this->_agsMetadata[$name] = $value;
 		}
 		else
 		{
@@ -50,9 +71,9 @@ abstract class AgsAR extends CActiveRecord
 	{
 		if (null === $this->_agsMetadata)
 		{
-			if ($this->hasAttribute('metaSerial'))
+			if ($this->hasAttribute(self::$_agsMetadataColumnName))
 			{
-				$this->_agsMetadata = json_decode($this->getAttribute('metaSerial'),true);
+				$this->_agsMetadata = json_decode($this->getAttribute(self::$_agsMetadataColumnName),true);
 			}
 
 			// for when metadata is empty
@@ -67,12 +88,15 @@ abstract class AgsAR extends CActiveRecord
 
 	public function setAgsMetadata($metadata)
 	{
-		$this->_agsMetadata = $metadata;
+		if (is_array($metadata))
+		{
+			$this->_agsMetadata = $metadata;
+		}
 	}
 
 	public function getAgsMetaKeys()
 	{
-		return array_keys($this->_agsMetadata);
+		return array_keys($this->getAgsMetadata());
 	}
 
 	public function getAttributeLabel($attribute)
@@ -109,88 +133,11 @@ abstract class AgsAR extends CActiveRecord
 
 	protected function beforeSave()
 	{
-		if ($this->hasAttribute('metaSerial') && is_array($this->_agsMetadata))
+		if ($this->hasAttribute(self::$_agsMetadataColumnName) && is_array($this->_agsMetadata))
 		{
-			$this->metaSerial = json_encode($this->_agsMetadata);
+			$this->setAttribute(self::$_agsMetadataColumnName,json_encode($this->_agsMetadata));
 		}
 
 		return parent::beforeSave();
-	}
-
-	public function searchWithPKQuery($query,$params,$or=false)
-	{
-		return $this->searchWithPKList(Yii::app()->db->createCommand($query)->queryColumn($params),$or);
-	}
-
-	public function searchWithPKList($pkList,$or=false)
-	{
-		if ($or)
-		{
-			if (null === $this->_pkList)
-			{
-				$this->_pkList = array();
-			}
-
-			foreach ($pkList as $pk)
-			{
-				$pk = (int)$pk;
-				$this->_pkList[$pk] = $pk;
-			}
-		}
-		else
-		{
-			if (null !== $this->_pkList)
-			{
-				foreach ($pkList as $k=>$v)
-				{
-					if (!in_array($v,$this->_pkList))
-					{
-						unset($pkList[$k]);
-					}
-				}
-			}
-			$this->_pkList = $pkList;
-		}
-
-		return $this;
-	}
-
-	public function findAll($condition='',$params=array())
-	{
-		$this->applyPKConditon();
-		return parent::findAll($condition,$params);
-	}
-
-	public function count($condition='',$params=array())
-	{
-		$this->applyPKConditon();
-		return parent::count($condition,$params);
-	}
-
-	public function getDbCriteria($createIfNull=true)
-	{
-		$this->applyPKConditon();
-		return parent::getDbCriteria($createIfNull);
-	}
-
-	protected function applyPKConditon()
-	{
-		/**
-		 * null means not any pk condition was added
-		 */
-		if (null !== $this->_pkList)
-		{
-			/**
-			 * must use array_values() here
-			 * curz createInCondition() only recognize 0,1,2... array
-			 *
-			 * and call getDbCriteria() from parent
-			 * to avoid dead loop
-			 */
-			parent::getDbCriteria()->mergeWith(array(
-				'condition'=>count($this->_pkList)?'(`t`.`id` in ('.implode(',',$this->_pkList).'))':'(0=1)',
-			));
-			$this->_pkList = null;
-		}
 	}
 }
