@@ -12,7 +12,7 @@
 abstract class AgsAR extends CActiveRecord
 {
 	private $_agsMetadata;
-	private static $_agsMetadataColumnName;
+	private static $_agsMetaColumnConfigs;
 
 	public function __construct($scenario = 'insert')
 	{
@@ -20,15 +20,28 @@ abstract class AgsAR extends CActiveRecord
 		{
 			if (($config = Y::p(get_class($this))) && is_array($config) && isset($config['agsMetadataColumn']))
 			{
-				self::$_agsMetadataColumnName = $config['agsMetadataColumn'];
-			}
-			else
-			{
-				self::$_agsMetadataColumnName = 'metaSerial';
+				$this->setAgsMetaColumn($config['agsMetadataColumn']);
 			}
 		}
 
 		parent::__construct($scenario);
+	}
+
+	protected function getAgsMetaColumn()
+	{
+		return (is_array(self::$_agsMetaColumnConfigs)
+				&& isset(self::$_agsMetaColumnConfigs[$class=get_class($this)]))?
+					self::$_agsMetaColumnConfigs[$class]:
+					'metaSerial';
+	}
+
+	protected function setAgsMetaColumn($column)
+	{
+		if (null === self::$_agsMetaColumnConfigs)
+		{
+			self::$_agsMetaColumnConfigs = array();
+		}
+		self::$_agsMetaColumnConfigs[get_class($this)] = $column;
 	}
 
 	public function __get($name)
@@ -71,9 +84,9 @@ abstract class AgsAR extends CActiveRecord
 	{
 		if (null === $this->_agsMetadata)
 		{
-			if ($this->hasAttribute(self::$_agsMetadataColumnName))
+			if ($this->hasAttribute($this->getAgsMetaColumn()))
 			{
-				$this->_agsMetadata = json_decode($this->getAttribute(self::$_agsMetadataColumnName),true);
+				$this->_agsMetadata = json_decode($this->getAttribute($this->getAgsMetaColumn()),true);
 			}
 
 			// for when metadata is empty
@@ -133,9 +146,9 @@ abstract class AgsAR extends CActiveRecord
 
 	protected function beforeSave()
 	{
-		if ($this->hasAttribute(self::$_agsMetadataColumnName) && is_array($this->_agsMetadata))
+		if ($this->hasAttribute($this->getAgsMetaColumn()) && is_array($this->_agsMetadata))
 		{
-			$this->setAttribute(self::$_agsMetadataColumnName,json_encode($this->_agsMetadata));
+			$this->setAttribute($this->getAgsMetaColumn(),json_encode($this->_agsMetadata));
 		}
 
 		return parent::beforeSave();

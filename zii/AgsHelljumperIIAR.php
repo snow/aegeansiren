@@ -130,6 +130,11 @@ abstract class AgsHelljumperIIAR extends AgsAR
 					//merge mother-side config and then drop-in-side's
 					self::$_agsHjConfig[$class] = array_merge(self::$_agsHjConfig[$class],$clientHelljumperConfig[$class]);
 				}
+				// AgsAR metadata
+				if (isset(self::$_agsHjConfig[$class]['agsMetadataColumn']))
+				{
+					$this->setAgsMetaColumn(self::$_agsHjConfig[$class]['agsMetadataColumn']);
+				}
 			}
 			else
 			{
