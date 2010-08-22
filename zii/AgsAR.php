@@ -14,19 +14,6 @@ abstract class AgsAR extends CActiveRecord
 	private $_agsMetadata;
 	private static $_agsMetaColumnConfigs;
 
-	public function __construct($scenario = 'insert')
-	{
-		if (null === self::$_agsMetadataColumnName)
-		{
-			if (($config = Y::p(get_class($this))) && is_array($config) && isset($config['agsMetadataColumn']))
-			{
-				$this->setAgsMetaColumn($config['agsMetadataColumn']);
-			}
-		}
-
-		parent::__construct($scenario);
-	}
-
 	protected function getAgsMetaColumn()
 	{
 		return (is_array(self::$_agsMetaColumnConfigs)
