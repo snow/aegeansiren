@@ -54,6 +54,28 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	}
 
 	/**
+	 * shortcut to hasAgsHjConfig()
+	 *
+	 * @param string $class
+	 * @param string $key
+	 * @return bool
+	 */
+	protected static function hasAgsHjConfigS($class,$key)
+	{
+		return key_exists($key,self::$_agsHjConfig[$class]);
+	}
+
+	/**
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	protected function hasAgsHjConfig($key)
+	{
+		return self::hasAgsHjConfigS(get_class($this),$key);
+	}
+
+	/**
 	 * shortcut to getAgsHjConfigS()
 	 * @param string $key
 	 * @return array config
