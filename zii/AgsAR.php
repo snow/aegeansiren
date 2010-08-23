@@ -99,6 +99,23 @@ abstract class AgsAR extends CActiveRecord
 		return array_keys($this->getAgsMetadata());
 	}
 
+	public function getAttributeLabel($attribute)
+	{
+		$messageKey = get_class($this).':'.$attribute.':label';
+		$label = Y::t('local',$messageKey);
+
+		if ($messageKey == $label)
+		{
+			$label = Y::t('local',get_class($this).':'.$attribute);
+		}
+
+		if ('none' === $label)
+		{
+			$label = '';
+		}
+		return $label;
+	}
+
 	protected function beforeValidate()
 	{
 		if (in_array($this->scenario,array('insert','update')))

@@ -219,4 +219,26 @@ abstract class AgsHelljumperIIAR extends AgsAR
 			break;
 		}
 	}
+
+	public function getAttributeLabel($attribute)
+	{
+		if (!$this->hasAgsHjConfig('languageCategory'))
+		{
+			$this->setAgsHjConfig('languageCategory','local');
+		}
+
+		$messageKey = get_class($this).':'.$attribute.':label';
+		$label = Y::t($this->getAgsHjConfig('languageCategory'),$messageKey);
+
+		if ($messageKey == $label)
+		{
+			$label = Y::t($this->getAgsHjConfig('languageCategory'),get_class($this).':'.$attribute);
+		}
+
+		if ('none' === $label)
+		{
+			$label = '';
+		}
+		return $label;
+	}
 }
