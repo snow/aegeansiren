@@ -121,24 +121,28 @@ abstract class AgsHelljumperIIAR extends AgsAR
 
 		if (!isset(self::$_agsHjConfig[$class]))
 		{
-			if (file_exists($file=call_user_func(array($class,'getAgsHjConfigFilePath'))))
+			// Y::p('helljumper')[$class] exists means this AR is droped outside
+			if (($clientHelljumperConfig = Y::p('helljumpers')) && isset($clientHelljumperConfig[$class]))
 			{
-				self::$_agsHjConfig[$class] = include($file);
-				// Y::p('helljumper')[$class] exists means this AR is droped outside
-				if (($clientHelljumperConfig = Y::p('helljumpers')) && isset($clientHelljumperConfig[$class]))
+				if (file_exists($file=call_user_func(array($class,'getAgsHjConfigFilePath'))))
 				{
 					//merge mother-side config and then drop-in-side's
-					self::$_agsHjConfig[$class] = array_merge(self::$_agsHjConfig[$class],$clientHelljumperConfig[$class]);
+					self::$_agsHjConfig[$class] = array_merge(include($file),$clientHelljumperConfig[$class]);
+
+					// AgsAR metadata
+					if (isset(self::$_agsHjConfig[$class]['agsMetadataColumn']))
+					{
+						$this->setAgsMetaColumn(self::$_agsHjConfig[$class]['agsMetadataColumn']);
+					}
 				}
-				// AgsAR metadata
-				if (isset(self::$_agsHjConfig[$class]['agsMetadataColumn']))
+				else
 				{
-					$this->setAgsMetaColumn(self::$_agsHjConfig[$class]['agsMetadataColumn']);
+					throw new CException('err:missingConfig:'.$class);
 				}
 			}
-			else
+			else //else consider it's in mother-app
 			{
-				throw new CException('err:missingConfig:'.$class);
+				self::$_agsHjConfig[$class] = array('dataAccessMode' => self::DATA_ACCESS_NATIVE);
 			}
 
 			switch (self::$_agsHjConfig[$class]['dataAccessMode'])
