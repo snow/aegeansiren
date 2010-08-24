@@ -17,7 +17,6 @@ class AgsAccessRule
 
 	function __construct($rule)
 	{
-		$rule = trim($rule);
 		$this->extractRule($rule);
 	}
 
@@ -38,7 +37,7 @@ class AgsAccessRule
 				case '|':
 					if ($indicator<$i)
 					{
-						$ruleSegments[] = substr($rule,$indicator,$i-$indicator);
+						$ruleSegments[] = trim(substr($rule,$indicator,$i-$indicator));
 						$indicator = $i+1;
 					}
 					$ruleOperators[] = $rule[$i];
@@ -69,7 +68,7 @@ class AgsAccessRule
 							throw new AgsInvalidParamsException(__CLASS__.'::'.__FUNCTION__,array('invalidRule'=>$rule));
 						}
 					}
-					$ruleSegments[] = substr($rule,$i+1,$breaketEnd-$i-1);
+					$ruleSegments[] = trim(substr($rule,$i+1,$breaketEnd-$i-1));
 					$i = $breaketEnd;
 					$indicator = $i+2;
 				break;
@@ -77,7 +76,7 @@ class AgsAccessRule
 
 			if (($ruleLen-1 === $i) && ($indicator < $ruleLen))
 			{
-				$ruleSegments[] = substr($rule,$indicator);
+				$ruleSegments[] = trim(substr($rule,$indicator));
 			}
 		}
 
@@ -88,7 +87,7 @@ class AgsAccessRule
 		}
 		else
 		{
-			if ($firstOr = array_search('|',$ruleOperators))
+			if (false !== ($firstOr = array_search('|',$ruleOperators)))
 			{
 				$endChildSegIndex = $firstOr+1;
 			}
@@ -115,23 +114,24 @@ class AgsAccessRule
 		}
 	}
 
-	public function execRule()
+	protected function execInternal()
 	{
-		$success = false;
-
 		if (1==Y::u()->id/*isset(Y::u()->roles) && is_array(Y::u()->roles) && in_array('AgsRoot',Y::u()->roles)*/)
 		{
-			$success = true;
+			return true;
 		}
 		else
 		{
 			if (count($this->_childRules))
 			{
-				$success = true;
 				foreach ($this->_childRules as $rule)
 				{
-					$success = $success && $rule->execRule();
+					if (!$rule->exec())
+					{
+						return false;
+					}
 				}
+				return true;
 			}
 			else
 			{
@@ -154,7 +154,7 @@ class AgsAccessRule
 								}
 							}
 						}
-						return  false;
+						return false;
 					break;
 
 					case 'users':
@@ -166,13 +166,23 @@ class AgsAccessRule
 						return in_array(Y::r()->userHostAddress,$ruleParams);
 					break;
 
-					default:
-						return false;
+					case 'checkId':
+						try
+						{
+							return (!Y::u()->isGuest && (Y::a()->controller->loadModel()->$ruleParamSrl == Y::u()->id));
+						}
+						catch (Exception $e)
+						{
+							return false;
+						}
 					break;
 				}
 			}
 		}
+	}
 
-		return $success || ($this->_nextRule && $this->_nextRule->execRule());
+	public function exec()
+	{
+		return $this->execInternal() || ($this->_nextRule && $this->_nextRule->exec());
 	}
 }

@@ -13,7 +13,7 @@ abstract class AgsController extends CController
 	protected function accessControl($controlString = '')
 	{
 		$accessRule = new AgsAccessRule($controlString);
-		if (!$accessRule->execRule())
+		if (!$accessRule->exec())
 		{
 			throw new CHttpException(403);
 		}
