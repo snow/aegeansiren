@@ -71,4 +71,32 @@ abstract class AgsController extends CController
 	{
 		$this->ajaxResponse(false,array('message'=>$message),$terminate);
 	}
+
+	public function autoRedirect($defaultUri = null,$deadLoopUri = null,$terminate = null)
+	{
+		if (!$defaultUri) $defaultUri = '/';
+
+		if (Y::r()->urlReferrer)
+		{
+			if (!$deadLoopUri)
+			{
+				$deadLoopUri = $this->createUrl($this->id.'/'.$this->action->id);
+			}
+
+			if (-1===stripos(Y::r()->urlReferrer,$deadLoopUri))
+			{
+				$redirectUri = $defaultUri;
+			}
+			else
+			{
+				$redirectUri = Y::r()->urlReferrer;
+			}
+		}
+		else
+		{
+			$redirectUri = $defaultUri;
+		}
+
+		$this->redirect($redirectUri,$terminate);
+	}
 }
