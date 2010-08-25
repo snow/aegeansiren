@@ -42,15 +42,21 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	private static $_db;
 
 	abstract public static function getAgsHjConfigFilePath();
+	abstract public static function getAgsHjIdS();
 
 	public function __construct($scenario='insert')
 	{
 		// override this constructor to init helljumper config before every thing
 		// use call_user_func() to dynamically call subclass-override
 		// DO call parent::__construct() in override
-		call_user_func(array($class=get_class($this),'initAgsHjConfigS'),$class);
+		call_user_func(array($class=get_class($this),'initAgsHjConfigS'),$this->getAgsHjId());
 
 		parent::__construct($scenario);
+	}
+
+	public function getAgsHjId()
+	{
+		return call_user_func(array(get_class($this),'getAgsHjIdS'));
 	}
 
 	/**
@@ -72,7 +78,7 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	 */
 	protected function hasAgsHjConfig($key)
 	{
-		return self::hasAgsHjConfigS(get_class($this),$key);
+		return self::hasAgsHjConfigS($this->getAgsHjId(),$key);
 	}
 
 	/**
@@ -82,7 +88,7 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	 */
 	protected function getAgsHjConfig($key = '')
 	{
-		return self::getAgsHjConfigS(get_class($this),$key);
+		return self::getAgsHjConfigS($this->getAgsHjId(),$key);
 	}
 
 	/**
@@ -113,7 +119,7 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	 */
 	protected function setAgsHjConfig($key,$value)
 	{
-		self::setAgsHjConfigS(get_class($this),$key,$value);
+		self::setAgsHjConfigS($this->getAgsHjId(),$key,$value);
 	}
 
 	/**

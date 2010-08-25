@@ -27,9 +27,10 @@ abstract class AgsAR extends CActiveRecord
 				$this->_agsMetadata = array();
 			}
 
-			if (!$this->isNewRecored)
+			if (!$this->isNewRecord
+				&& is_array($record = json_decode($this->getAttribute($this->getAgsMetaColumn()),true)))
 			{
-				$this->_agsMetadata = array_merge($this->_agsMetadata,json_decode($this->getAttribute($this->getAgsMetaColumn()),true));
+				$this->_agsMetadata = array_merge($this->_agsMetadata,$record);
 			}
 		}
 	}
