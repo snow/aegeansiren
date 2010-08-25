@@ -12,23 +12,31 @@
 abstract class AgsAR extends CActiveRecord
 {
 	private $_agsMetadata;
-	private static $_agsMetaColumnConfigs;
+	const AGS_METADATA_KEY_MODE_AUTO = 'auto';
+
+	public function init()
+	{
+		parent::init();
+
+		if ($this->hasAttribute($this->getAgsMetaColumn()))
+		{
+			$this->_agsMetadata = $this->getAgsMetaDefaults();
+
+			if (self::AGS_METADATA_KEY_MODE_AUTO === $this->_agsMetadata)
+			{
+				$this->_agsMetadata = array();
+			}
+
+			if (!$this->isNewRecored)
+			{
+				$this->_agsMetadata = array_merge($this->_agsMetadata,json_decode($this->getAttribute($this->getAgsMetaColumn()),true));
+			}
+		}
+	}
 
 	protected function getAgsMetaColumn()
 	{
-		return (is_array(self::$_agsMetaColumnConfigs)
-				&& isset(self::$_agsMetaColumnConfigs[$class=get_class($this)]))?
-					self::$_agsMetaColumnConfigs[$class]:
-					'metaSerial';
-	}
-
-	protected function setAgsMetaColumn($column)
-	{
-		if (null === self::$_agsMetaColumnConfigs)
-		{
-			self::$_agsMetaColumnConfigs = array();
-		}
-		self::$_agsMetaColumnConfigs[get_class($this)] = $column;
+		return 'metaSerial';
 	}
 
 	public function __get($name)
@@ -39,9 +47,9 @@ abstract class AgsAR extends CActiveRecord
 		{
 			return $this->$getter();
 		}
-		elseif (in_array($name,$this->getAgsMetaKeys()))
+		elseif ($this->hasAgsMetadata($name))
 		{
-			return $this->_agsMetadata[$name];
+			return $this->getAgsMetadata($name);
 		}
 		else
 		{
@@ -57,9 +65,9 @@ abstract class AgsAR extends CActiveRecord
 		{
 			$this->$setter($value);
 		}
-		elseif (in_array($name,$this->getAgsMetaKeys()))
+		elseif ($this->hasAgsMetadata($name))
 		{
-			$this->_agsMetadata[$name] = $value;
+			$this->setAgsMetadata($name,$value);
 		}
 		else
 		{
@@ -67,36 +75,53 @@ abstract class AgsAR extends CActiveRecord
 		}
 	}
 
-	public function getAgsMetadata()
+	public function getAgsMetadata($key = null)
 	{
-		if (null === $this->_agsMetadata)
+		if (null === $key)
 		{
-			if ($this->hasAttribute($this->getAgsMetaColumn()))
-			{
-				$this->_agsMetadata = json_decode($this->getAttribute($this->getAgsMetaColumn()),true);
-			}
-
-			// for when metadata is empty
-			if (!is_array($this->_agsMetadata))
-			{
-				$this->_agsMetadata = array();
-			}
+			return $this->_agsMetadata;
 		}
-
-		return $this->_agsMetadata;
-	}
-
-	public function setAgsMetadata($metadata)
-	{
-		if (is_array($metadata))
+		elseif (key_exists($key,$this->_agsMetadata))
 		{
-			$this->_agsMetadata = $metadata;
+			return $this->_agsMetadata[$key];
+		}
+		else
+		{
+			return null;
 		}
 	}
 
-	public function getAgsMetaKeys()
+	public function setAgsMetadata($key,$value)
 	{
-		return array_keys($this->getAgsMetadata());
+		if ((self::AGS_METADATA_KEY_MODE_AUTO === $this->getAgsMetaDefaults()) || $this->hasAgsMetadata($key))
+		{
+			$this->_agsMetadata[$key] = $value;
+		}
+		elseif (is_array($key))
+		{
+			$this->_agsMetadata = $key;
+		}
+		else
+		{
+			throw new CException('class '.get_class($this).' dosen\'t has metadata '.$key);
+		}
+	}
+
+	public function hasAgsMetadata($key)
+	{
+		if (self::AGS_METADATA_KEY_MODE_AUTO === $this->getAgsMetaDefaults())
+		{
+			return is_array($this->_agsMetadata) && key_exists($key,$this->_agsMetadata);
+		}
+		else
+		{
+			return in_array($key,$this->getAgsMetaDefaults());
+		}
+	}
+
+	public function getAgsMetaDefaults()
+	{
+		return self::AGS_METADATA_KEY_MODE_AUTO;
 	}
 
 	public function getAttributeLabel($attribute)
