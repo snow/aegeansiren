@@ -26,12 +26,16 @@ abstract class AgsAR extends CActiveRecord
 			{
 				$this->_agsMetadata = array();
 			}
+		}
+	}
 
-			if (!$this->isNewRecord
-				&& is_array($record = json_decode($this->getAttribute($this->getAgsMetaColumn()),true)))
-			{
-				$this->_agsMetadata = array_merge($this->_agsMetadata,$record);
-			}
+	protected function afterFind()
+	{
+		parent::afterFind();
+
+		if (is_array($record = json_decode($this->getAttribute($this->getAgsMetaColumn()),true)))
+		{
+			$this->_agsMetadata = array_merge($this->_agsMetadata,$record);
 		}
 	}
 
@@ -112,11 +116,11 @@ abstract class AgsAR extends CActiveRecord
 	{
 		if (self::AGS_METADATA_KEY_MODE_AUTO === $this->getAgsMetaDefaults())
 		{
-			return is_array($this->_agsMetadata) && key_exists($key,$this->_agsMetadata);
+			return (is_array($this->_agsMetadata) && key_exists($key,$this->_agsMetadata));
 		}
 		else
 		{
-			return in_array($key,$this->getAgsMetaDefaults());
+			return key_exists($key,$this->getAgsMetaDefaults());
 		}
 	}
 
