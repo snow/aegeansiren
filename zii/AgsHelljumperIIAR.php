@@ -233,12 +233,12 @@ abstract class AgsHelljumperIIAR extends AgsAR
 			$this->setAgsHjConfig('languageCategory','local');
 		}
 
-		$messageKey = get_class($this).':'.$attribute.':label';
+		$messageKey = $this->getAgsHjId().':'.$attribute.':label';
 		$label = Y::t($this->getAgsHjConfig('languageCategory'),$messageKey);
 
 		if ($messageKey == $label)
 		{
-			$label = Y::t($this->getAgsHjConfig('languageCategory'),get_class($this).':'.$attribute);
+			$label = Y::t($this->getAgsHjConfig('languageCategory'),$this->getAgsHjId().':'.$attribute);
 		}
 
 		if ('none' === $label)
