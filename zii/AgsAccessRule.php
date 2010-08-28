@@ -140,7 +140,7 @@ class AgsAccessRule
 				switch ($ruleName)
 				{
 					case 'roles':
-						return isset(Y::u()->roles) && count(array_intersect($ruleParams,Y::u()->roles));
+						return !Y::u()->isGuest && isset(Y::u()->roles) && count(array_intersect($ruleParams,Y::u()->roles));
 					break;
 
 					case 'privileges':
