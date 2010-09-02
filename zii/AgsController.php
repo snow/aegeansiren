@@ -83,7 +83,7 @@ abstract class AgsController extends CController
 				$deadLoopUri = $this->createAbsoluteUrl($this->id.'/'.$this->action->id);
 			}
 
-			if (-1 !== stripos(Y::r()->urlReferrer,$deadLoopUri))
+			if (false !== stripos(Y::r()->urlReferrer,$deadLoopUri))
 			{
 				$redirectUri = $defaultUri;
 			}
