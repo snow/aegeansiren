@@ -78,7 +78,7 @@ abstract class AgsController extends CController
 
 		if (Y::r()->urlReferrer)
 		{
-			if (!$deadLoopUri)
+			if (null === $deadLoopUri)
 			{
 				$deadLoopUri = $this->createAbsoluteUrl($this->id.'/'.$this->action->id);
 			}
