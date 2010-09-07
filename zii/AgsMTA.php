@@ -2,7 +2,7 @@
 
 class AgsMTA extends CComponent
 {
-	public $host,$user,$password;
+	public $host,$user,$password,$name;
 
 	public function init()
 	{
@@ -29,7 +29,7 @@ class AgsMTA extends CComponent
 			}
 		}
 
-		$mailer->SetFrom(Y::a()->params['systemEmail']['addr'],Y::a()->params['systemEmail']['name']);
+		$mailer->SetFrom($this->user,$this->name);
 		$mailer->IsHTML(true);
 		$mailer->CharSet = 'utf-8';
 
