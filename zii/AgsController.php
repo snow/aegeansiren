@@ -72,7 +72,7 @@ abstract class AgsController extends CController
 		$this->ajaxResponse(false,array('message'=>$message),$terminate);
 	}
 
-	public function autoRedirect($defaultUri = null,$deadLoopUri = null,$terminate = null)
+	public function getAutoRedirectUri($defaultUri = null,$deadLoopUri = null)
 	{
 		if (!$defaultUri) $defaultUri = '/';
 
@@ -97,6 +97,11 @@ abstract class AgsController extends CController
 			$redirectUri = $defaultUri;
 		}
 
-		$this->redirect($redirectUri,$terminate);
+		return $redirectUri;
+	}
+
+	public function autoRedirect($defaultUri = null,$deadLoopUri = null,$terminate = null)
+	{
+		$this->redirect($this->getAutoRedirectUri($defaultUri,$deadLoopUri),$terminate);
 	}
 }
