@@ -5,7 +5,7 @@ abstract class AgsController extends CController
 	const NOTE_LV_NOTE = 1;
 	const NOTE_LV_ERROR = 2;
 
-	protected function addUserNote($message,$level=self::NOTE_LV_NOTE)
+	public function addUserNote($message,$level=self::NOTE_LV_NOTE)
 	{
 		Y::u()->addNote($message,$level);
 	}
