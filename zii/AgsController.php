@@ -75,6 +75,10 @@ abstract class AgsController extends CController
 	public function getAutoRedirectUri($defaultUri = null,$deadLoopUri = null)
 	{
 		if (!$defaultUri) $defaultUri = '/';
+		if (is_array($defaultUri))
+		{
+			$defaultUri = CHtml::normalizeUrl($defaultUri);
+		}
 
 		if (Y::r()->urlReferrer)
 		{
