@@ -29,7 +29,7 @@ class AgsMTA extends CComponent
 			}
 		}
 
-		$mailer->SetFrom($this->user,$this->name);
+		$mailer->SetFrom($this->user,$this->name,false);
 		$mailer->IsHTML(true);
 		$mailer->CharSet = 'utf-8';
 
