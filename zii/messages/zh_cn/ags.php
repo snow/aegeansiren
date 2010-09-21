@@ -102,6 +102,15 @@ return array(
 	'Asterism:capricorn'=>'摩羯',
 	'Asterism:aquarius'=>'水瓶',
 	'Asterism:pisces'=>'双鱼',
+	/*
+	 *
+	 */
+	'friendlytime:justnow'=>'刚刚',
+	'friendlytime:minutes'=>'{interval}分钟前',
+	'friendlytime:hours'=>'{interval}小时前',
+	'friendlytime:days'=>'{interval}天前',
+	'friendlytime:months'=>'{interval}个月前',
+	'friendlytime:longAgo'=>'很久以前',
 	/**
 	 * error
 	 */

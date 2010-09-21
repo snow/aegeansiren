@@ -79,6 +79,65 @@ class AgsHtml extends CHtml
 			self::longDate($timestamp);
 	}
 
+	public static function friendlyTime($timestamp)
+	{
+		$diff = time() - (int)$timestamp;
+
+		$minute = 60;
+		$hour = $minute * 60;
+		$day = $hour * 24;
+		$month = $day * 30;
+
+		if ($diff < $minute)
+		{
+			return Y::t('ags','friendlytime:justnow');
+		}
+		else if ($diff < $hour)
+		{
+			$diff = round($diff / $minute);
+			if ($diff == 0)
+			{
+				$diff = 1;
+			}
+
+			return Y::t('ags','friendlytime:minutes',array('{interval}'=>$diff));
+		}
+		else if ($diff < $day)
+		{
+			$diff = round($diff / $hour);
+			if ($diff == 0) {
+				$diff = 1;
+			}
+
+			return Y::t('ags','friendlytime:hours',array('{interval}'=>$diff));
+		}
+		else if ($diff < $month)
+		{
+			$diff = round($diff / $day);
+			if ($diff == 0) {
+				$diff = 1;
+			}
+
+			return Y::t('ags','friendlytime:days',array('{interval}'=>$diff));
+		}
+		else
+		{
+			$diff = round($diff / $month);
+			if ($diff == 0) {
+				$diff = 1;
+			}
+
+			if ($diff > 5)
+			{
+				return Y::t('ags','friendlytime:longAgo');
+			}
+			else
+			{
+				return Y::t('ags','friendlytime:months',array('{interval}'=>$diff));
+			}
+		}
+	}
+
 	public static function errorSummary($model,$htmlOptions=array(),$header='',$footer='')
 	{
 		$content='';
