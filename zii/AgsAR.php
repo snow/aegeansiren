@@ -7,9 +7,12 @@
  * New: metadata support
  * New: auto timestamp
  * Chg: prefer to getter or setter method than to access property directly in __get() and __set()
+ * Chg: use i18n system to provide attribute label instead of hard-coded in method
  *
  * 增加metadata支持
  * 自动对created和updated字段加timestamp
+ * getter和setter方法在__get和__set里有更高的优先级
+ * 用i18n系统来提供属性label，取代原来硬编码成一个类方法
  *
  * @author snow@firebloom.cc
  *
