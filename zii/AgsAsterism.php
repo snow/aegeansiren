@@ -1,7 +1,8 @@
 <?php
 /**
+ * provide asterism const and utility methods
  *
- * @author snow,flare
+ * @author rasse8574@gmail.com,snow@firebloom.cc
  *
  */
 class AgsAsterism{
