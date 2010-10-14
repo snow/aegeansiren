@@ -1,7 +1,7 @@
 <?php
 /**
  * AegeanSiren ActiveRecord
- * a set of enhancement of ActiveRecord
+ * enhancements of ActiveRecord
  * ActiveRecord的一系列增强
  *
  * New: metadata support
@@ -180,6 +180,7 @@ abstract class AgsAR extends CActiveRecord
 
 	/**
 	 * override to provide attr label by language system
+	 * 从语言文件获得属性label
 	 *
 	 * @param string $attribute
 	 */
@@ -203,6 +204,7 @@ abstract class AgsAR extends CActiveRecord
 	protected function beforeValidate()
 	{
 		// auto timestamp
+		// 自动打时间戳
 		if (in_array($this->scenario,array('insert','update')))
 		{
 			$time = time();
