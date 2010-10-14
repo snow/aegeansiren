@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * China's province and cities and some major foreign contry of China
+ * 拆哪的省市，和对拆哪来说的主要外国
+ *
+ * @author chenglin.zhu@gmail.com,liuweijava@gmail.com,snow@firebloom.cc
+ *
+ */
 class AgsRegionHelper extends CComponent
 {
 	public static $regionDb = array(
@@ -480,6 +486,14 @@ class AgsRegionHelper extends CComponent
 		182 => '澳门',
 	);
 
+	/**
+	 * specify a ActiveRecord class with 'id','name' and 'parentId' attribute
+	 * and this method create and save AR instances with the hardcoded data above
+	 * 指定一个有'id','name'和'parentId'属性的ActiveRecord类
+	 * 该方法会用上面硬编码的数据创建并保存AR实例
+	 *
+	 * @param string class to store region data
+	 */
 	public static function initDb($regionArClass)
 	{
 		echo '<pre>';

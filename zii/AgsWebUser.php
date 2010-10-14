@@ -1,7 +1,27 @@
 <?php
-
+/**
+ * AegeanSiren WebUser
+ * enhancements of CWebUser
+ * CWebUser的一系列增强
+ *
+ * New: save notification messages in user session
+ * New: across application cookie support in same domain
+ * Chg: use language file to provide guest name
+ *
+ *
+ *
+ * @author snow@firebloom.cc
+ *
+ */
 abstract class AgsWebUser extends CWebUser
 {
+	const SITE_MESSAGE_NOTE = 'note';
+	const SITE_MSG_ERR = 'error';
+
+	/**
+	 * check language file for guest name
+	 * 检索语言文件中的未登录用户称谓
+	 */
 	public function getName()
 	{
 		if(($name=$this->getState('__name'))!==null)
@@ -10,6 +30,13 @@ abstract class AgsWebUser extends CWebUser
 			return Y::t('local','guest');
 	}
 
+	/**
+	 * add notification message to user session
+	 * 添加一条消息到用户session
+	 *
+	 * @param string the message
+	 * @param string message type,note or error
+	 */
 	public function addNote($message,$level)
 	{
 		$notes = $this->getState('ags-userNotes');
@@ -24,11 +51,19 @@ abstract class AgsWebUser extends CWebUser
 		$this->setState('ags-userNotes',$notes);
 	}
 
+	/**
+	 * clear all stored message
+	 * 清理所有已储存的消息
+	 */
 	public function clearNotes()
 	{
 		$this->setState('ags-userNotes',null);
 	}
 
+	/**
+	 * get all stored notes
+	 * 取得所有消息
+	 */
 	public function getNotes()
 	{
 		$notes = array(

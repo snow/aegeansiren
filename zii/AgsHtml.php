@@ -2,9 +2,17 @@
 
 class AgsHtml extends CHtml
 {
+	public static $cssClassDisplayNone = 's-h';
+
+	/**
+	 * return {@link cssClassDisplayNone} when given $attribute is empty
+	 * 当传入参数为空时，返回{@link cssClassDisplayNone}
+	 *
+	 * @param mixed $attribute
+	 */
 	public static function hideOnEmpty($attribute)
 	{
-		return empty($attribute)?'s-h':'';
+		return empty($attribute)?self::$cssClassDisplayNone:'';
 	}
 
 	public static function activeTextField($model,$attribute,$htmlOptions=array())

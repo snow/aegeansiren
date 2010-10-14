@@ -1,10 +1,15 @@
 <?php
-
+/**
+ * a component to help generate unique char key for table
+ *
+ * @author snow@firebloom.cc
+ *
+ */
 class AgsUCK extends CComponent
 {
 	public $uckMaxTable = 'AgsUniqueCharKeyMax';
 	private $_cache = array();
-	
+
 	public function init()
 	{
 		if (!in_array($this->uckMaxTable,Y::a()->db->schema->tableNames))
@@ -12,7 +17,7 @@ class AgsUCK extends CComponent
 			throw new CException(Y::t('ags','err:requriedSchemaNotFound'));
 		}
 	}
-	
+
 	public function genKey($tableName,$columnName)
 	{
 		$curMax = Y::a()->db->createCommand('select `max` from '.$this->uckMaxTable.' where tableName=:tn and columnName=:cn')
@@ -20,10 +25,10 @@ class AgsUCK extends CComponent
 				':tn'=>$tableName,
 				':cn'=>$columnName,
 			));
-		
+
 		$newKey = $curMax?'':1;
 	}
-	
+
 	protected function increaseCharKey($key)
 	{
 		for ($i = (strlen($key)-1); $i > -1; $i--)
@@ -45,11 +50,11 @@ class AgsUCK extends CComponent
 		}
 		return $key;
 	}
-	
+
 	protected function char2int($char)
 	{
 		$ord = ord($char);
-		
+
 		if ((47 < $ord) && (58 > $ord))
 		{
 			return (int)$char;
@@ -64,7 +69,7 @@ class AgsUCK extends CComponent
 		}
 		throw new CException('ags','err:invalidParams');
 	}
-	
+
 	protected function int2char($int)
 	{
 		if ((0 <= $int) && (10 > $int))

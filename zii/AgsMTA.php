@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * provide a configured PHPMailer instance
+ * 提供一个配置好的PHPMailer实例
+ *
+ * @author snow
+ *
+ */
 class AgsMTA extends CComponent
 {
 	public $host,$user,$password,$name;
@@ -10,7 +16,10 @@ class AgsMTA extends CComponent
 	}
 
 	/**
-	 * @return PHPMailer
+	 * TODO: any way to avoid new instance every time?
+	 *
+	 * @return a configured PHPMailer instance
+	 * 一个配置好的PHPMailer实例
 	 */
 	public function getMailer()
 	{

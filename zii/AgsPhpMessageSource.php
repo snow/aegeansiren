@@ -10,6 +10,7 @@ class AgsPhpMessageSource extends CPhpMessageSource
 	/**
 	 * Override CMessageSource's version
 	 * to make message be translate even when specified language is the same as source
+	 * 重载这个类，就是为了使得即使应用设定的语言和用户选择的语言一致，仍查找语言文件
 	 *
 	 * @param string the message category
 	 * @param string the message to be translated
