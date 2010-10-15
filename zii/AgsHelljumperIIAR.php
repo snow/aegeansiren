@@ -104,14 +104,79 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	}
 
 	/**
+	 * override this method to make subclass logics
+	 * DO call parent::initAgsHjConfigS($class) in override
 	 *
-	 * @param string $class
+	 * @param string {@link getAgsHjId}
+	 */
+	public static function initAgsHjConfigS($agsHjId)
+	{
+		// check if config is loaded
+		// 检查配置是否已经载入
+		if (!isset(self::$_agsHjConfig[$agsHjId]))
+		{
+			// Y::p('helljumper')[$agsHjId] exists means this AR is droped outside
+			// 如果Y::p('helljumper')[$agsHjId]存在，判断这个类运行在外部应用
+			if (($clientHelljumperConfig = Y::p('helljumpers')) && isset($clientHelljumperConfig[$agsHjId]))
+			{
+				if (file_exists($file=call_user_func(array($agsHjId,'getAgsHjConfigFilePath'))))
+				{
+					// merge mother-side config and then drop-in-side's
+					// 合并mother app側的配置文件和dropin-in側配置，后者覆盖前者
+					self::$_agsHjConfig[$agsHjId] = array_merge(include($file),$clientHelljumperConfig[$agsHjId]);
+
+					// AgsAR metadata
+					// TODO what this codes is here?
+					if (isset(self::$_agsHjConfig[$agsHjId]['agsMetadataColumn']))
+					{
+						$this->setAgsMetaColumn(self::$_agsHjConfig[$agsHjId]['agsMetadataColumn']);
+					}
+				}
+				else
+				{
+					throw new CException('err:missingConfig:'.$agsHjId);
+				}
+			}
+			// else consider it's in mother-app
+			// 否则认为正在mother app里
+			else
+			{
+				self::$_agsHjConfig[$agsHjId] = array('dataAccessMode' => self::DATA_ACCESS_NATIVE);
+			}
+
+			// valid config
+			// 检查配置完整性
+			switch (self::$_agsHjConfig[$agsHjId]['dataAccessMode'])
+			{
+				case self::DATA_ACCESS_DB:
+					self::$_db[$agsHjId] = new CDbConnection;
+
+					foreach (self::getAgsHjConfigS($agsHjId,'db') as $key=>$value)
+					{
+						self::$_db[$agsHjId]->$key = $value;
+					}
+
+					self::$_db[$agsHjId]->active = true;
+				break;
+
+				case self::DATA_ACCESS_SOAP:
+					throw new CException('err:incomplete');
+				break;
+			}
+		}
+	}
+
+	/**
+	 *
+	 * @param string {@link getAgsHjId}
 	 * @param string $key
 	 * @return bool
 	 */
-	protected static function hasAgsHjConfigS($class,$key)
+	protected static function hasAgsHjConfigS($agsHjId,$key)
 	{
-		return key_exists($key,self::$_agsHjConfig[$class]);
+		call_user_func(array($agsHjId,'initAgsHjConfigS'),$agsHjId);
+
+		return key_exists($key,self::$_agsHjConfig[$agsHjId]);
 	}
 
 	/**
@@ -133,19 +198,19 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	 * 忽略$key参数取得该类的整个配置数组
 	 * 或者提供$key参数来取得配置数组中的一个元素
 	 *
-	 * @param string $class
+	 * @param string {@link getAgsHjId}
 	 * @param string $key
 	 * @return mixed config array or one element of it
 	 */
-	protected static function getAgsHjConfigS($class,$key = '')
+	protected static function getAgsHjConfigS($agsHjId,$key = '')
 	{
-		call_user_func(array(get_class($this),'initAgsHjConfigS'),self::getAgsHjIdS());
+		call_user_func(array($agsHjId,'initAgsHjConfigS'),$agsHjId);
 
 		if ($key)
 		{
-			if (key_exists($key,self::$_agsHjConfig[$class]))
+			if (key_exists($key,self::$_agsHjConfig[$agsHjId]))
 			{
-				return self::$_agsHjConfig[$class][$key];
+				return self::$_agsHjConfig[$agsHjId][$key];
 			}
 			else
 			{
@@ -154,7 +219,7 @@ abstract class AgsHelljumperIIAR extends AgsAR
 		}
 		else
 		{
-			return self::$_agsHjConfig[$class];
+			return self::$_agsHjConfig[$agsHjId];
 		}
 	}
 
@@ -172,13 +237,13 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	/**
 	 * set one of config items of a helljumper class
 	 *
-	 * @param string $class
+	 * @param string {@link getAgsHjId}
 	 * @param string $key
 	 * @param mixed $value
 	 */
-	protected static function setAgsHjConfigS($class,$key,$value)
+	protected static function setAgsHjConfigS($agsHjId,$key,$value)
 	{
-		self::$_agsHjConfig[$class][$key] = $value;
+		self::$_agsHjConfig[$agsHjId][$key] = $value;
 	}
 
 	/**
@@ -193,65 +258,6 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	}
 
 	/**
-	 * override this method to make subclass logics
-	 * DO call parent::initAgsHjConfigS($class) in override
-	 *
-	 * @param string $class
-	 */
-	public static function initAgsHjConfigS($class)
-	{
-		// check if config is loaded
-		// 检查配置是否已经载入
-		if (!isset(self::$_agsHjConfig[$class]))
-		{
-			// Y::p('helljumper')[$class] exists means this AR is droped outside
-			// 如果Y::p('helljumper')[$class]存在，判断这个类运行在外部应用
-			if (($clientHelljumperConfig = Y::p('helljumpers')) && isset($clientHelljumperConfig[$class]))
-			{
-				if (file_exists($file=call_user_func(array($class,'getAgsHjConfigFilePath'))))
-				{
-					// merge mother-side config and then drop-in-side's
-					// 合并mother app側的配置文件和dropin-in側配置，后者覆盖前者
-					self::$_agsHjConfig[$class] = array_merge(include($file),$clientHelljumperConfig[$class]);
-
-					// AgsAR metadata
-					// TODO what this codes is here?
-					if (isset(self::$_agsHjConfig[$class]['agsMetadataColumn']))
-					{
-						$this->setAgsMetaColumn(self::$_agsHjConfig[$class]['agsMetadataColumn']);
-					}
-				}
-				else
-				{
-					throw new CException('err:missingConfig:'.$class);
-				}
-			}
-			// else consider it's in mother-app
-			// 否则认为正在mother app里
-			else
-			{
-				self::$_agsHjConfig[$class] = array('dataAccessMode' => self::DATA_ACCESS_NATIVE);
-			}
-
-			// valid config
-			// 检查配置完整性
-			switch (self::$_agsHjConfig[$class]['dataAccessMode'])
-			{
-				case self::DATA_ACCESS_DB:
-					if (!self::model()->dbConnection instanceof CDbConnection)
-					{
-						throw new CException('err:invalidDbConfig:'.$class);
-					}
-				break;
-
-				case self::DATA_ACCESS_SOAP:
-					throw new CException('err:incomplete');
-				break;
-			}
-		}
-	}
-
-	/**
 	 * override to make possible to use mother-app-side database connection.
 	 * 重载以使得子类被import到外部应用的时候，仍能访问数据库
 	 *
@@ -262,22 +268,7 @@ abstract class AgsHelljumperIIAR extends AgsAR
 		switch ($this->getAgsHjConfig('dataAccessMode'))
 		{
 			case self::DATA_ACCESS_DB:
-				if (null === self::$_db)
-				{
-					self::$_db = array();
-				}
-				if (!(self::$_db[$class=get_class($this)] instanceof CDbConnection))
-				{
-					self::$_db[$class] = new CDbConnection;
-
-					foreach ($this->getAgsHjConfig('db') as $key=>$value)
-					{
-						self::$_db[$class]->$key = $value;
-					}
-
-					self::$_db[$class]->active = true;
-				}
-				return self::$_db[$class];
+				return self::$_db[$this->getAgsHjId()];
 			break;
 
 			default:
