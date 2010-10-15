@@ -1,30 +1,39 @@
 <?php
 /**
- * alias of AegeanSiren
+ * utilities
+ * 各种小工具
+ *
+ * @author snow@firebloom.cc
  */
 class S
 {
 	const AFTER_VARDUMP_CONTINUE = 0;
-	const AFTER_VARDUMP_END = 1;
-	const AFTER_VARDUMP_TERMINATE = 2;
+	const AFTER_VARDUMP_TERMINATE = 1;
 
-	public static function d($var,$afterDebug = self::AFTER_VARDUMP_END)
+	/**
+	 * snippets use with var_dump
+	 * 经常和var_dump一起用的代码
+	 *
+	 * @param unknown_type $var
+	 * @param unknown_type $afterDebug
+	 */
+	public static function d($var,$afterDebug = self::AFTER_VARDUMP_TERMINATE)
 	{
 		echo '<pre>';
-		var_dump($var);
-		switch ($afterDebug)
-		{
-			case self::AFTER_VARDUMP_END:
-				echo '</pre>';
-				Y::a()->end();
-			break;
 
-			case self::AFTER_VARDUMP_TERMINATE:
-				die('</pre>');
-			break;
+		var_dump($var);
+
+		if (self::AFTER_VARDUMP_TERMINATE === $afterDebug)
+		{
+			exit('</pre>');
 		}
 	}
 
+	/**
+	 * 获得一个单词的复数形式
+	 *
+	 * @param string $word to get multiform
+	 */
 	public static function getMultiform($word)
 	{
 		if (preg_match('/[^aeiou]y$/',$word))
@@ -37,6 +46,11 @@ class S
 		}
 	}
 
+	/**
+	 * 获得一个单词的单数形式
+	 *
+	 * @param string $word to get single form
+	 */
 	public static function getSingleForm($word)
 	{
 		if (preg_match('/ies$/',$word))
@@ -49,6 +63,9 @@ class S
 		}
 	}
 
+	/**
+	 * @param string to determain if is email address
+	 */
 	public static function isEmail($string)
 	{
 		$pattern='/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*'
@@ -56,21 +73,36 @@ class S
 		return preg_match($pattern,$string);
 	}
 
+	/**
+	 * @param string to determain if is Tencent qq
+	 */
 	public static function isTencentQq($string)
 	{
 		return is_numeric($string)?(($len = strlen($string)) >= 5 && $len <= 10):self::isEmail($string);
 	}
 
+	/**
+	 * @param string to determin if is ip address
+	 */
 	public static function isIpAddress($string)
 	{
 		return (false!==inet_pton($string));
 	}
 
+	/**
+	 * @param string url to extract domain from
+	 */
 	public static function getUrlDomain($url)
 	{
 		return is_string($url)?current(explode('/',array_pop(explode('//',$url,2)),2)):'';
 	}
 
+	/**
+	 * 生成随机字符串
+	 *
+	 * @param len of the random string
+	 * @param gen method:basic,alpah,alnum,numeric,nozero,unique,md5,encrypt,sha1
+	 */
 	public static function getRandomString($len = 8,$type = 'alnum')
 	{
 		switch($type)
@@ -117,6 +149,11 @@ class S
 		}
 	}
 
+	/**
+	 * DANGEROUS! delete dir
+	 * 危险！删除文件夹
+	 * @param path to delete
+	 */
 	public static function delDir($dir)
 	{
 		if (substr($dir, strlen($dir)-1, 1) != '/') $dir .= '/';

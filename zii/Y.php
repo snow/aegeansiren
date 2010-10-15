@@ -1,17 +1,13 @@
 <?php
 /**
- * alias frequently used Yii objects or methods with a short name
+ * alias frequently used Yii components or methods with a short name
+ * 常用Yii框架组件或者方法的快捷方式
+ *
+ * @author snow@firebloom.cc
+ *
  */
 class Y
 {
-	const ACCESS_ONLY_SELF = 0;
-	const ACCESS_ASSIGNED_USERS = 10;
-	const ACCESS_ASSIGNED_GROUPS = 20;
-	const ACCESS_ASSIGNED_ROLES = 30;
-	const ACCESS_ONLY_FRIEND = 40;
-	const ACCESS_SIGNEDIN_USERS = 100;
-	const ACCESS_PUBLIC = 200;
-
 	public static function t($category,$message,$params=array(),$source=null,$language=null)
 	{
 		return Yii::t($category,$message,$params,$source,$language);

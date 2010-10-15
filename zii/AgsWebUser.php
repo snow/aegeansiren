@@ -95,9 +95,10 @@ abstract class AgsWebUser extends CWebUser
 				if($this->beforeLogin($id,$states,true))
 				{
 					$this->changeIdentity($id,$name,$states);
-					//
-					// override to add process on $this->indentityCookie
-					//
+					// add $this->indentityCookie attributes to enable
+					// across subdomain and application sessions
+					// 添加$this->identityCookie的属性来启用跨子域名和应用的session
+					// TODO: try session params workaround?
 					if(is_array($this->identityCookie))
 					{
 						foreach($this->identityCookie as $name=>$value)
@@ -123,9 +124,10 @@ abstract class AgsWebUser extends CWebUser
 			$data=@unserialize($data);
 			if(is_array($data) && isset($data[0],$data[1],$data[2],$data[3]))
 			{
-				//
-				// override to add process on $this->indentityCookie
-				//
+				// add $this->indentityCookie attributes to enable
+				// across subdomain and application sessions
+				// 添加$this->identityCookie的属性来启用跨子域名和应用的session
+				// TODO: try session params workaround?
 				if(is_array($this->identityCookie))
 				{
 					foreach($this->identityCookie as $name=>$value)
