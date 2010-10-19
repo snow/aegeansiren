@@ -58,6 +58,9 @@ abstract class AgsHelljumperIIAR extends AgsAR
 	/**
 	 * @return string filepath of config file
 	 * 返回配置文件路径
+	 *
+	 * suggest path is application/config/CLASS_NAME.php
+	 * 建议保存在应用目录的 config/CLASS_NAME.php
 	 */
 	abstract public static function getAgsHjConfigFilePath();
 
